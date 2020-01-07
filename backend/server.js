@@ -9,7 +9,12 @@ MongoClient.connect(dbLogin, (err, dbRef) => {
     console.log(err);
   }
   console.log("DB connected");
+<<<<<<< HEAD
   mongo = dbRef.db("witf");
+=======
+  mongoDb = dbRef.db("witf");
+  console.log("Database connection initialized");
+>>>>>>> f0b0fb7fa7372d7bb0a845540f08b809957fb498
 });
 
 app.use("/", express.static("build")); // Needed for the HTML and JS files
