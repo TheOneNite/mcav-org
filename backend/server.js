@@ -9,12 +9,8 @@ MongoClient.connect(dbLogin, (err, dbRef) => {
     console.log(err);
   }
   console.log("DB connected");
-<<<<<<< HEAD
-  mongo = dbRef.db("witf");
-=======
   mongoDb = dbRef.db("witf");
   console.log("Database connection initialized");
->>>>>>> f0b0fb7fa7372d7bb0a845540f08b809957fb498
 });
 
 app.use("/", express.static("build")); // Needed for the HTML and JS files
@@ -24,7 +20,15 @@ app.use("/", express.static("public")); // Needed for local assets
 
 app.post("/add-fit", upload.none(), (req, res) => {
   let newFit = { title: req.body.name, fit: req.body.fitStr };
-  mongo.collection("fits").insertOne(newFit);
+  mongo.collection("fits").insertOne(newFit, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send(JSON.stringify({ success: false }));
+      return;
+    }
+    console.log("fit written to db");
+    res.send(JSON.stringify({ success: true }));
+  });
 });
 
 // Your endpoints go before this line
