@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import VisibilityDropdown from "./VisibilityDropdown.jsx";
 
+import devURL from "./assets/proxy.js";
+
 class AddFitForm extends Component {
   constructor(props) {
     super(props);
@@ -27,11 +29,17 @@ class AddFitForm extends Component {
     let data = new FormData();
     data.append("name", this.state.name);
     data.append("fitStr", this.state.fitStr);
-    const res = await fetch("/add-fit", {
+    const res = await fetch(devURL + "/add-fit", {
       method: "POST",
       body: data,
       credentials: "include"
     });
+    let bod = await res.text();
+    bod = JSON.parse(bod);
+    if (bod.success) {
+      alert("Fit successfully added");
+      this.setState({});
+    }
   };
   render = () => {
     return (
