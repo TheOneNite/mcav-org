@@ -140,6 +140,7 @@ class UnconnectedEditDoctrine extends Component {
           className="input-title"
         />
         <button onClick={this.saveEdits}>Save</button>
+        <div></div>
         <div className="fitlist-wrapper">
           {this.state.fitList && this.state.fitList.map(this.fitEdit)}
         </div>

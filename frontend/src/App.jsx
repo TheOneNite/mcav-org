@@ -8,6 +8,7 @@ import "./App.css";
 import Fits from "./Fits.jsx";
 import Home from "./Home.jsx";
 import ViewDoctrine from "./ViewDoctrine.jsx";
+import Landing from "./landing/Landing.jsx";
 
 class App extends Component {
   renderBase = () => {
@@ -23,7 +24,7 @@ class App extends Component {
             path="/doctrine/:docId"
             component={ViewDoctrine}
           />
-          <Route exact={true} path="/" component={Home}></Route>
+          <Route exact={true} path="/" component={Landing}></Route>
         </BrowserRouter>
       </Provider>
     );
