@@ -9,6 +9,7 @@ import Fits from "./Fits.jsx";
 import Home from "./Home.jsx";
 import ViewDoctrine from "./ViewDoctrine.jsx";
 import Landing from "./landing/Landing.jsx";
+import Auth from "./Auth.jsx";
 
 class App extends Component {
   renderBase = () => {
@@ -18,6 +19,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <BrowserRouter>
+          <Route exact={true} path="/login" component={Auth} />
           <Route exact={true} path="/fits" component={Fits} />
           <Route
             exact={true}

@@ -1,5 +1,8 @@
 let express = require("express");
 let app = express();
+let cookieParser = require("cookie-parser");
+app.use(cookieParser());
+let request = require("request");
 
 let multer = require("multer");
 const upload = multer();
@@ -17,6 +20,8 @@ MongoClient.connect(dbLogin, (err, dbRef) => {
   console.log("Database connection initialized");
 });
 
+const ssoLogin = require("../../secrets/mcav-fits/sso-login.js");
+
 app.use(cors());
 app.use("/", express.static("build")); // Needed for the HTML and JS files
 app.use("/", express.static("public")); // Needed for local assets
@@ -31,7 +36,56 @@ const generateId = length => {
   return id;
 };
 
+const getUIDbySID = sid => {
+  mongo.collection("sessions").findOne({ sid }, (err, result) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    if (result === null) {
+      return;
+    }
+    return result.uid;
+  });
+};
+
 // Your endpoints go after this line
+
+app.get("/auth", (req, res) => {
+  let uid = getUIDbySID(req.cookies.sid);
+  if (uid === undefined) {
+    let newSid = generateId(10);
+    res.send({ success: false });
+  } else {
+    res.send({ success: true });
+  }
+});
+app.get("/sso-auth", (req, res) => {
+  console.log(req.query.code);
+  console.log(req.query.state);
+  let tokenBod = {
+    grant_type: "authorization_code",
+    code: req.query.code
+  };
+  let ssoAuthStr = ssoLogin.clientId + ":" + ssoLogin.key;
+  let buff = new Buffer(ssoAuthStr);
+  let ssoAuthStr64 = buff.toString("base64");
+  request.post(
+    "https://login.eveonline.com/oauth/token",
+    {
+      headers: { Basic: ssoAuthStr64 },
+      body: tokenBod,
+      json: true
+    },
+    (err, res, bod) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log(bod);
+    }
+  );
+});
 
 app.post("/add-fit", upload.none(), (req, res) => {
   console.log("POST/add-fit");
