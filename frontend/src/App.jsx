@@ -10,6 +10,7 @@ import Home from "./Home.jsx";
 import ViewDoctrine from "./ViewDoctrine.jsx";
 import Landing from "./landing/Landing.jsx";
 import Auth from "./Auth.jsx";
+import AuthSSO from "./Auth-SSO.jsx";
 
 class App extends Component {
   renderBase = () => {
@@ -26,6 +27,7 @@ class App extends Component {
             path="/doctrine/:docId"
             component={ViewDoctrine}
           />
+          <Route exact={true} path="/sso-auth" component={AuthSSO}></Route>
           <Route exact={true} path="/" component={Landing}></Route>
         </BrowserRouter>
       </Provider>

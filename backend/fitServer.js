@@ -78,10 +78,12 @@ app.get("/sso-auth", (req, res) => {
       json: true
     },
     (err, res, bod) => {
+      console.log("auth-response");
       if (err) {
         console.log(err);
         return;
       }
+      //console.log(res);
       console.log(bod);
     }
   );
