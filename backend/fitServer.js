@@ -9,7 +9,7 @@ const upload = multer();
 const cors = require("cors");
 
 const proxyBuilder = require("./proxy.ts");
-const proxy = proxyBuilder("dev");
+const proxy = proxyBuilder("beta");
 
 const MongoClient = require("mongodb").MongoClient;
 const dbLogin = require("./secrets/databaseURL.js");
@@ -259,6 +259,6 @@ app.all("/*", (req, res, next) => {
   res.sendFile(__dirname + "/build/index.html");
 });
 
-app.listen(4000, "0.0.0.0", () => {
+app.listen(80, "0.0.0.0", () => {
   console.log("Server running on port 4000");
 });
