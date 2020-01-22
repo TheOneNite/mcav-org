@@ -5,7 +5,12 @@ const reducer = (state, action) => {
   if (action.type === "loadDocs") {
     return { ...state, docList: action.docList };
   }
-  return { ...state };
+  switch (action.type) {
+    case "login":
+      return { ...state, loginStatus: true };
+    default:
+      return { ...state };
+  }
 };
 
 export default reducer;
