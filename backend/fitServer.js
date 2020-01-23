@@ -9,10 +9,10 @@ const upload = multer();
 const cors = require("cors");
 
 const proxyBuilder = require("./proxy.ts");
-const proxy = proxyBuilder("beta");
+const proxy = proxyBuilder("dev");
 
 const MongoClient = require("mongodb").MongoClient;
-const dbLogin = require("./secrets/databaseURL.js");
+const dbLogin = require("../../secrets/mcav-fits/databaseURL.js");
 let mongo = undefined;
 MongoClient.connect(dbLogin, (err, dbRef) => {
   if (err) {
@@ -259,6 +259,6 @@ app.all("/*", (req, res, next) => {
   res.sendFile(__dirname + "/build/index.html");
 });
 
-app.listen(80, "0.0.0.0", () => {
+app.listen(8080, "0.0.0.0", () => {
   console.log("Server running on port 4000");
 });
