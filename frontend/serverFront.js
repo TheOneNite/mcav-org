@@ -5,6 +5,7 @@ app.use("/", express.static("build")); // Needed for the HTML and JS files
 app.use("/", express.static("public")); // Needed for local assets
 
 app.all("/*", (req, res) => {
+  console.log("fits front hit");
   // needed for react router
   res.sendFile(__dirname + "/build/index.html");
 });
