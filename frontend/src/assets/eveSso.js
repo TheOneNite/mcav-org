@@ -1,4 +1,4 @@
-import proxyBuilder from "./proxy.js";
+import { proxyBuilder } from "./proxy.js";
 
 const redirect = proxyBuilder("redirect-beta");
 
