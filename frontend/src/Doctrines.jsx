@@ -8,7 +8,7 @@ import { getDoctrines } from "./assets/networking.js";
 class UnconnectedDoctrines extends Component {
   constructor(props) {
     super(props);
-    this.state = { adding: true };
+    this.state = { adding: false };
   }
   toggleAdd = () => {
     this.setState({ adding: !this.state.adding });
@@ -36,7 +36,9 @@ class UnconnectedDoctrines extends Component {
           {this.props.docList && this.props.docList.map(this.renderDoctrine)}
         </div>
         {this.state.adding && <AddDoctrineForm />}
-        <button onClick={this.toggleAdd}>Add Doctrine</button>
+        <button onClick={this.toggleAdd}>
+          {this.state.adding ? "Hide Add Form " : "Add Doctrine"}
+        </button>
       </div>
     );
   };

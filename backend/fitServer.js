@@ -260,5 +260,5 @@ app.all("/*", (req, res, next) => {
 });
 
 app.listen(8080, "0.0.0.0", () => {
-  console.log("Server running on port 4000");
+  console.log("Server running on port 8080");
 });

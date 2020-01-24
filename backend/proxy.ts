@@ -3,7 +3,7 @@ const generateProxy = build => {
     case "dev":
       return "localhost";
     case "beta":
-      return "dev.compayn.space";
+      return "compayn.space:3000";
   }
 };
 

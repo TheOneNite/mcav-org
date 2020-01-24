@@ -84,7 +84,7 @@ class UnconnectedLanding extends Component {
   render = () => {
     return (
       <Wrap>
-        <Bg src="/enyo.mp4" autoPlay={true} muted={true} />
+        <Bg src="/enyo.mp4" autoPlay={true} muted={true} loop={true} />
         <Page>
           <LinkWrapper>
             <div>
