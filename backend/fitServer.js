@@ -28,7 +28,6 @@ const ssoLogin = require("../../secrets/mcav-fits/sso-login.js");
 app.use(cors({ origin: true, credentials: true }));
 app.use("/", express.static("build")); // Needed for the HTML and JS files
 app.use("/", express.static("public")); // Needed for local assets
-
 const generateId = length => {
   const base = "abcdefghijklmnopqrstuvqxyz";
   let id = "";

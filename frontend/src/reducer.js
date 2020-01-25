@@ -7,7 +7,7 @@ const reducer = (state, action) => {
   }
   switch (action.type) {
     case "login":
-      return { ...state, loginStatus: true };
+      return { ...state, loginStatus: true, userData: action.userData };
     default:
       return { ...state };
   }
