@@ -1,0 +1,17 @@
+.button-bg {
+  margin-bottom: 10px;
+  width: 144px;
+  height: 36px;
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  background: transparent url("undock_button_static.png") center top no-repeat;
+  font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  line-height: 36px;
+}
+.button-bg:hover {
+  background-image: url("undock_button_animated.gif");
+  color: rgba(255, 255, 255, 0.8);
+}

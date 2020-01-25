@@ -9,9 +9,9 @@ import Doctrines from "./Doctrines.jsx";
 import Landing from "./landing/Landing.jsx";
 import Auth from "./Auth.jsx";
 import AuthSSO from "./Auth-SSO.jsx";
-import devURL from "./assets/proxy.js";
 
-const uri = proxyBuilder("server-beta");
+// "server-beta"
+const uri = proxyBuilder();
 
 class UnconnectedRouter extends Component {
   constructor(props) {
@@ -26,8 +26,7 @@ class UnconnectedRouter extends Component {
     let bod = await res.text();
     bod = JSON.parse(bod);
     if (bod.success === true) {
-      console.log("login");
-      this.props.dispatch({ type: "login" });
+      this.props.dispatch({ type: "login", userData: bod.payload });
       return;
     }
   };

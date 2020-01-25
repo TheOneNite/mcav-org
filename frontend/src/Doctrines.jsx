@@ -36,9 +36,11 @@ class UnconnectedDoctrines extends Component {
           {this.props.docList && this.props.docList.map(this.renderDoctrine)}
         </div>
         {this.state.adding && <AddDoctrineForm />}
-        <button onClick={this.toggleAdd}>
-          {this.state.adding ? "Hide Add Form" : "Add Doctrine"}
-        </button>
+        {this.props.user.isAdmin && (
+          <button onClick={this.toggleAdd}>
+            {this.state.adding ? "Hide Add Form" : "Add Doctrine"}
+          </button>
+        )}
       </div>
     );
   };
@@ -47,7 +49,8 @@ class UnconnectedDoctrines extends Component {
 const mapState = state => {
   return {
     //docList: state.allDocs, admin: state.isAdmin
-    docList: state.docList
+    docList: state.docList,
+    user: state.userData
   };
 };
 

@@ -8,7 +8,7 @@ export const proxyBuilder = build => {
       return "http://compayn.space:3000";
     case "server-beta":
       return "http://compayn.space:8080";
-    case "server-dev":
+    default:
       return "http://localhost:8080";
   }
 };

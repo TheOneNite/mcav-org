@@ -9,7 +9,7 @@ const upload = multer();
 const cors = require("cors");
 
 const proxyBuilder = require("./proxy.ts");
-const proxy = proxyBuilder("beta");
+const proxy = proxyBuilder("dev");
 
 const MongoClient = require("mongodb").MongoClient;
 const dbLogin = require("../../secrets/mcav-fits/databaseURL.js");
@@ -22,6 +22,7 @@ MongoClient.connect(dbLogin, (err, dbRef) => {
   mongo = dbRef.db("doctrines");
   console.log("Database connection initialized");
 });
+const dbFetchUser = require("./db_modules/getUserData.js");
 
 const ssoLogin = require("../../secrets/mcav-fits/sso-login.js");
 
@@ -62,13 +63,16 @@ const getUIDbySID = sid => {
 
 app.get("/auth", async (req, res) => {
   console.log("GET/auth");
-  console.log(req.cookies.sid);
+  //console.log(req.cookies.sid);
   let uid = await getUIDbySID(req.cookies.sid);
-  console.log(uid);
+  //console.log(uid);
   if (uid === undefined) {
     res.send(JSON.stringify({ success: false }));
   } else {
-    res.send(JSON.stringify({ success: true }));
+    userData = await dbFetchUser(uid, mongo);
+    console.log("db return");
+    console.log(userData);
+    res.send(JSON.stringify({ success: true, payload: userData }));
   }
 });
 app.get("/sso-auth", (req, res) => {
