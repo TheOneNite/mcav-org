@@ -37,7 +37,7 @@ class UnconnectedDoctrines extends Component {
         </div>
         {this.state.adding && <AddDoctrineForm />}
         <button onClick={this.toggleAdd}>
-          {this.state.adding ? "Hide Add Form " : "Add Doctrine"}
+          {this.state.adding ? "Hide Add Form" : "Add Doctrine"}
         </button>
       </div>
     );

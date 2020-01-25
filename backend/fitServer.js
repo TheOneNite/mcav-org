@@ -13,7 +13,7 @@ const proxy = proxyBuilder("beta");
 
 const MongoClient = require("mongodb").MongoClient;
 const dbLogin = require("../../secrets/mcav-fits/databaseURL.js");
-let mongo = undefined;
+var mongo = undefined;
 MongoClient.connect(dbLogin, (err, dbRef) => {
   if (err) {
     console.log(err);
