@@ -26,6 +26,7 @@ class UnconnectedRouter extends Component {
     let bod = await res.text();
     bod = JSON.parse(bod);
     if (bod.success === true) {
+      console.log(bod.payload);
       this.props.dispatch({ type: "login", userData: bod.payload });
       return;
     }
