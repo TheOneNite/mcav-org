@@ -51,6 +51,7 @@ const getUIDbySID = sid => {
       if (result === null) {
         console.log("no user found");
         resolve(undefined);
+        return;
       }
       resolve(result.uid);
     });
