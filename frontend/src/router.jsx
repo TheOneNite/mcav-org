@@ -1,6 +1,7 @@
 import { Route, Switch } from "react-router-dom";
 import { proxyBuilder } from "./assets/proxy.js";
 import React, { Component } from "react";
+import { connect } from "react-redux";
 
 const uri = proxyBuilder("server-beta");
 
