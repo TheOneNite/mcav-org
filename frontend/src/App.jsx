@@ -5,14 +5,6 @@ import store from "./store.js";
 import logo from "./logo.svg";
 import "./App.css";
 
-import Fits from "./Fits.jsx";
-import Home from "./Home.jsx";
-import ViewDoctrine from "./ViewDoctrine.jsx";
-import Doctrines from "./Doctrines.jsx";
-import Landing from "./landing/Landing.jsx";
-import Auth from "./Auth.jsx";
-import AuthSSO from "./Auth-SSO.jsx";
-import devURL from "./assets/proxy.js";
 import Router from "./router.jsx";
 
 class App extends Component {

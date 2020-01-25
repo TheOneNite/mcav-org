@@ -3,6 +3,14 @@ import { proxyBuilder } from "./assets/proxy.js";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import Fits from "./Fits.jsx";
+import ViewDoctrine from "./ViewDoctrine.jsx";
+import Doctrines from "./Doctrines.jsx";
+import Landing from "./landing/Landing.jsx";
+import Auth from "./Auth.jsx";
+import AuthSSO from "./Auth-SSO.jsx";
+import devURL from "./assets/proxy.js";
+
 const uri = proxyBuilder("server-beta");
 
 class UnconnectedRouter extends Component {
@@ -20,25 +28,19 @@ class UnconnectedRouter extends Component {
   };
   render = () => {
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route exact={true} path="/" component={Landing} />
-          <Route exact={true} path="/login" component={Auth} />
-          <Route exact={true} path="/fits" component={Fits} />
-          <Route
-            exact={true}
-            path="/doctrine/:docId"
-            component={ViewDoctrine}
-          />
-          <Route exact={true} path="/doctrines" component={Doctrines} />
-          <Route exact={true} path="/sso-auth" component={AuthSSO}></Route>
-          <Route
-            exact={true}
-            path="/insufficient-permissions"
-            render={this.renderDenial}
-          />
-        </Switch>
-      </BrowserRouter>
+      <Switch>
+        <Route exact={true} path="/" component={Landing} />
+        <Route exact={true} path="/login" component={Auth} />
+        <Route exact={true} path="/fits" component={Fits} />
+        <Route exact={true} path="/doctrine/:docId" component={ViewDoctrine} />
+        <Route exact={true} path="/doctrines" component={Doctrines} />
+        <Route exact={true} path="/sso-auth" component={AuthSSO}></Route>
+        <Route
+          exact={true}
+          path="/insufficient-permissions"
+          render={this.renderDenial}
+        />
+      </Switch>
     );
   };
 }
