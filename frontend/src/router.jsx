@@ -48,3 +48,4 @@ const mapStateToProps = state => {
 };
 
 const Router = connect(mapStateToProps)(UnconnectedRouter);
+export default Router;
