@@ -35,6 +35,8 @@ class UnconnectedDoctrines extends Component {
     );
   };
   render = () => {
+    console.log("doc");
+    console.log(this.props.user);
     if (this.props.user === undefined) {
       const dots = "........";
       setTimeout(this.loadCount, 1000);
