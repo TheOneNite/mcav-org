@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 
 import AddDoctrineForm from "./AddDoctrineForm.jsx";
@@ -23,12 +23,18 @@ class UnconnectedDoctrines extends Component {
   renderDoctrine = docData => {
     return (
       <div>
-        <img src={docData.icon} />
+        <img src={docData.icon} alt="" />
         <Link to={"/doctrine/" + docData.id}>{docData.name}</Link>
       </div>
     );
   };
   render = () => {
+    if (this.props.user === undefined) {
+      return <div>Loading......</div>;
+    }
+    if (this.props.user === "failed") {
+      return <Redirect to="/login" />;
+    }
     return (
       <div>
         <div>Doctrines</div>
