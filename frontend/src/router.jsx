@@ -24,22 +24,39 @@ class UnconnectedRouter extends Component {
   getUser = async () => {
     const res = await fetch(uri + "/auth", { credentials: "include" });
     let bod = await res.text();
-    console.log(bod);
+    bod = JSON.parse(bod);
+    if (bod.success === true) {
+      console.log("login");
+      this.props.dispatch({ type: "login" });
+      return;
+    }
+  };
+  renderDenial = () => {
+    return <div>You are not authorized to access this page</div>;
   };
   render = () => {
+    if (this.props.login === undefined) {
+      this.getUser();
+    }
+    console.log(this.props.login);
     return (
       <Switch>
-        <Route exact={true} path="/" component={Landing} />
         <Route exact={true} path="/login" component={Auth} />
-        <Route exact={true} path="/fits" component={Fits} />
-        <Route exact={true} path="/doctrine/:docId" component={ViewDoctrine} />
-        <Route exact={true} path="/doctrines" component={Doctrines} />
         <Route exact={true} path="/sso-auth" component={AuthSSO}></Route>
-        <Route
-          exact={true}
-          path="/insufficient-permissions"
-          render={this.renderDenial}
-        />
+        <Route exact={true} path="/" component={Landing} />
+        {this.props.login ? (
+          <>
+            <Route exact={true} path="/fits" component={Fits} />
+            <Route
+              exact={true}
+              path="/doctrine/:docId"
+              component={ViewDoctrine}
+            />
+            <Route exact={true} path="/doctrines" component={Doctrines} />
+          </>
+        ) : (
+          <Route exact={false} path="/" render={this.renderDenial} />
+        )}
       </Switch>
     );
   };
@@ -47,7 +64,8 @@ class UnconnectedRouter extends Component {
 
 const mapStateToProps = state => {
   return {
-    user: state.userData
+    user: state.userData,
+    login: state.loginStatus
   };
 };
 

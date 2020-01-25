@@ -8,9 +8,6 @@ import "./App.css";
 import Router from "./router.jsx";
 
 class App extends Component {
-  renderDenial = () => {
-    return <div>You are not authorized to access this page</div>;
-  };
   render = () => {
     return (
       <Provider store={store}>
