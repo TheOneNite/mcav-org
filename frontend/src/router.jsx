@@ -11,7 +11,7 @@ import Auth from "./Auth.jsx";
 import AuthSSO from "./Auth-SSO.jsx";
 
 // "server-beta"
-const uri = proxyBuilder();
+const uri = proxyBuilder("server-beta");
 
 class UnconnectedRouter extends Component {
   constructor(props) {

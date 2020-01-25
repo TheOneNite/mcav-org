@@ -9,7 +9,7 @@ const upload = multer();
 const cors = require("cors");
 
 const proxyBuilder = require("./proxy.ts");
-const proxy = proxyBuilder("dev");
+const proxy = proxyBuilder("beta");
 
 const MongoClient = require("mongodb").MongoClient;
 const dbLogin = require("../../secrets/mcav-fits/databaseURL.js");
