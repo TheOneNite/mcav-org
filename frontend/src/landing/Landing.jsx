@@ -7,7 +7,6 @@ import devURL from "../assets/proxy.js";
 
 const Page = styled.div`
   margin: 0px;
-  padding: 25px;
   width: 100vw;
   box-sizing: border-box;
   position: relative;
@@ -29,7 +28,7 @@ const Wrap = styled.div`
 
 const Lonk = styled.a`
   font-variant: small-caps;
-  font-size: 36px;
+  font-size: 5vh;
   font-weight: bolder;
   color: #720d10;
   text-decoration: none;
@@ -43,11 +42,11 @@ const LinkWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-around;
-  position: relative;
+  position: absolute;
   z-index: 10;
   .router-link {
     font-variant: small-caps;
-    font-size: 36px;
+    font-size: 5vh;
     font-weight: bolder;
     color: #bc992e;
     :hover {
@@ -55,17 +54,23 @@ const LinkWrapper = styled.div`
       -webkit-text-stroke: 1px #720d10;
     }
   }
+  .upper {
+    top: 5vh;
+  }
+  .lower {
+    bottom: 5vh;
+  }
 `;
 
 const TITLE = styled.div`
   color: rgba(0, 0, 0, 0);
-  width: 100%;
-  height: max-content;
+  width: 100vw;
+  height: 85vh;
   text-align: center;
   font-size: 600px;
-  position: relative;
-  right: 70px;
-  bottom: 35px;
+  font-size: 33vw;
+  box-sizing: border-box;
+  margin: auto auto auto auto;
   -webkit-text-stroke: 5px #bc992e;
 `;
 
@@ -86,15 +91,20 @@ class UnconnectedLanding extends Component {
       <Wrap>
         <Bg src="/enyo.mp4" autoPlay={true} muted={true} loop={true} />
         <Page>
-          <LinkWrapper>
+          <LinkWrapper className="upper">
             <div>
               <Lonk>Tools</Lonk>
             </div>
             <div>
-              <Lonk href="https://forums.mcav.org/">Forums</Lonk>
+              <Lonk href="https://forums.mcav.org/" target="_blank">
+                Forums
+              </Lonk>
             </div>
             <div>
-              <Lonk href="https://zkillboard.com/alliance/99006690/">
+              <Lonk
+                href="https://zkillboard.com/alliance/99006690/"
+                target="_blank"
+              >
                 Killboard
               </Lonk>
             </div>
@@ -103,17 +113,23 @@ class UnconnectedLanding extends Component {
             </div>
           </LinkWrapper>
           <TITLE>MCAV</TITLE>
-          <LinkWrapper>
+          <LinkWrapper className="lower">
             {this.props.loggedIn ? (
               <>
                 <div>
-                  <Lonk href="https://pathfinder.mcav.org">Pathfinder</Lonk>
+                  <Lonk href="https://pathfinder.mcav.org" target="_blank">
+                    Pathfinder
+                  </Lonk>
                 </div>
                 <div>
-                  <Lonk href="https://mcav.ga">Seat</Lonk>
+                  <Lonk href="https://mcav.ga" target="_blank">
+                    Seat
+                  </Lonk>
                 </div>
                 <div>
-                  <Lonk href="/doctrines">Doctrines</Lonk>
+                  <Lonk href="/doctrines" target="_blank">
+                    Doctrines
+                  </Lonk>
                 </div>
               </>
             ) : (
