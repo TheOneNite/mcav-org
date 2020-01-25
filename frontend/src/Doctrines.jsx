@@ -8,7 +8,7 @@ import { getDoctrines } from "./assets/networking.js";
 class UnconnectedDoctrines extends Component {
   constructor(props) {
     super(props);
-    this.state = { adding: false };
+    this.state = { adding: false, loadCounter: 1 };
   }
   toggleAdd = () => {
     this.setState({ adding: !this.state.adding });
@@ -20,6 +20,12 @@ class UnconnectedDoctrines extends Component {
   componentDidMount = () => {
     this.loadDoctrines();
   };
+  loadCount = () => {
+    if (this.state.loadCounter > 5) {
+      this.setState({ loadCounter: 1 });
+    }
+    this.setState({ loadCounter: this.state.loadCounter + 1 });
+  };
   renderDoctrine = docData => {
     return (
       <div>
@@ -30,7 +36,9 @@ class UnconnectedDoctrines extends Component {
   };
   render = () => {
     if (this.props.user === undefined) {
-      return <div>Loading......</div>;
+      const dots = "........";
+      setTimeout(this.loadCount, 1000);
+      return <div>{"Loading" + dots.slice(0, this.state.loadCounter)}</div>;
     }
     if (this.props.user === "failed") {
       return <Redirect to="/login" />;
