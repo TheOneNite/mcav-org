@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 import AddDoctrineForm from "./AddDoctrineForm.jsx";
 import EditDoctrine from "./EditDoctrine.jsx";
@@ -68,7 +69,7 @@ class UnconnectedViewDoctrine extends Component {
     }
     return (
       <Style>
-        <a href="/">Home</a>
+        <Link to="/doctrines">Doctrines Home</Link>
         <h2>{this.state.docData && this.state.docData.name}</h2>
         <button onClick={this.toggleEdit}>Edit</button>
         {this.state.editing && <AddDoctrineForm edit={true} />}
