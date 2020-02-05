@@ -57,6 +57,9 @@ class UnconnectedDoctrines extends Component {
             {this.state.adding ? "Hide Add Form" : "Add Doctrine"}
           </button>
         )}
+        <div>
+          <Link to="/fits">See All Fits</Link>
+        </div>
       </div>
     );
   };

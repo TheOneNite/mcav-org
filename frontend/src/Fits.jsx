@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import AddFitForm from "./AddFitForm.jsx";
 import { connect } from "react-redux";
 import devURL from "./assets/proxy.js";
+import FitButton from "./FitButtons";
 
 class UnconnectedFits extends Component {
   constructor(props) {
@@ -24,9 +25,11 @@ class UnconnectedFits extends Component {
     }
   };
   renderFit = (fitData, index) => {
-    return <button name={index}>{fitData.title}</button>;
+    return <FitButton fitData={fitData} key={index} />;
   };
   render = () => {
+    const { user } = this.props;
+    console.log(user);
     return (
       <div>
         Fits
@@ -36,7 +39,7 @@ class UnconnectedFits extends Component {
               return this.renderFit(fit, index);
             })}
         </div>
-        <button onClick={this.toggleAdd}>Add Fit</button>
+        {user.isAdmin && <button onClick={this.toggleAdd}>Add Fit</button>}
         {this.state.addFit && <AddFitForm />}
       </div>
     );
@@ -45,7 +48,9 @@ class UnconnectedFits extends Component {
 
 const mapState = state => {
   return {
-    fits: state.fitList
+    fits: state.fitList,
+    doctrines: state.doctrines,
+    user: state.userData
   };
 };
 
