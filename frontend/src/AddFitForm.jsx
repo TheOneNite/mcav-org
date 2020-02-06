@@ -15,7 +15,8 @@ class AddFitForm extends Component {
     let fitStr = event.target.value;
     if (this.state.name === undefined) {
       let fitLines = fitStr.split("\n");
-      let title = fitLines[0].split(" ").shift();
+      let title = fitLines[0].split(" ").pop();
+      title = title.slice(0, title.length - 1);
       this.setState({ name: title, fitStr });
       return;
     }
