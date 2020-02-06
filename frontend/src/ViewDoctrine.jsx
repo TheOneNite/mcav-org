@@ -55,6 +55,7 @@ class UnconnectedViewDoctrine extends Component {
     return <div className="fit-wrapper">{fitLines}</div>;
   };
   render = () => {
+    const { user } = this.props;
     if (this.state.editing) {
       return (
         <Style>
@@ -71,7 +72,7 @@ class UnconnectedViewDoctrine extends Component {
       <Style>
         <Link to="/doctrines">Doctrines Home</Link>
         <h2>{this.state.docData && this.state.docData.name}</h2>
-        <button onClick={this.toggleEdit}>Edit</button>
+        {user.isAdmin && <button onClick={this.toggleEdit}>Edit</button>}
         {this.state.editing && <AddDoctrineForm edit={true} />}
         <div className="fitlist-wrapper">
           {this.state.fitList && this.state.fitList.map(this.renderFit)}
@@ -82,7 +83,7 @@ class UnconnectedViewDoctrine extends Component {
 }
 
 const mapState = state => {
-  return {};
+  return { user: state.userData };
 };
 
 const ViewDoctrine = connect(mapState)(UnconnectedViewDoctrine);
