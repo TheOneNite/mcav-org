@@ -8,8 +8,16 @@ class FitButton extends Component {
   toggleExpand = () => {
     this.setState({ expand: !this.state.expand });
   };
+  componentDidMount = () => {
+    const { onClick } = this.props;
+    if (onClick) {
+      this.setState({ clickHandler: onClick });
+    }
+    this.setState({ clickHandler: this.toggleExpand });
+  };
   render = () => {
-    const { fitData } = this.props;
+    const { fitData, className } = this.props;
+    const { clickHandler } = this.state;
     let formattedFit = undefined;
     let hull = "";
     if (this.state.expand === true) {
@@ -25,7 +33,7 @@ class FitButton extends Component {
       hull = hull.slice(1, hull.length - 1);
     }
     return (
-      <button onClick={this.toggleExpand}>
+      <button onClick={clickHandler} className={className}>
         {this.state.expand ? formattedFit : `${fitData.title} (${hull})`}
       </button>
     );

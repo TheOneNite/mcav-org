@@ -90,7 +90,7 @@ class UnconnectedViewDoctrine extends Component {
   };
   render = () => {
     const { user } = this.props;
-    const { activeFit } = this.state;
+    const { activeFit, docData } = this.state;
     if (this.state.editing) {
       return (
         <Style>
@@ -112,18 +112,7 @@ class UnconnectedViewDoctrine extends Component {
         <div className="doctrine-wrapper">
           <div className="writeup-wrapper">
             <Header>Description</Header>
-            {`Hazmat is a longrange skirmish doctrine with good staying power that lets us keep fighting with nano principales in situations that are too hot for nano proper.  One of the primary uses for this doctrine will be going out and killing big things that our nano gangs tackle in kspace, and to that end it is designed with the ability to clear tackle and mitigate damage in order to stabilize and control a grid long enough for us to bring caps as primary anti-big-thing DPS and maybe even extract them once the big thing is dead.  In order to do this the doctrine is going to be DUAL-PROPPED, with a MWD to position on grid and kite away from stuff as well as an AB to keep speed up and sig down when fighting big bads.
-
-Mainline for this doctrine will be Ishtars, logi will be Onerios, tackle will be a mix of brick Heretics and Ishkurs, and there’s also a link Legion
-
-Ishtar: These are pretty straightforward drone damage AHACs.  You have some guns but they’re basically only for shredding triangles that try and get onto the ball.
-
-Onerios: Kitey logi, range and speed are your best friend.  You also are dualpropped so if you ever get caught you can switch to AB and fly along with a destroyer sig
-
-Heretics: Primary tackle for the fleet, you have scram+web and are reasonably fast.  You’re also pretty tanky and will hold under reps from the logi.
-
-Ishkur: A faster initial tackle option that also has strong drone antisupport.  As a plus it uses essentially the same skills as the enyo so you can put all your alts in one of these.
-`}
+            {docData && docData.writeup}
           </div>
           <div className="fitlist-wrapper">
             {this.state.fitList?.map(this.renderFitList)}

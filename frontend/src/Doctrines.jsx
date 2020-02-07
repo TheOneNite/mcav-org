@@ -51,11 +51,15 @@ class UnconnectedDoctrines extends Component {
         <div>
           {this.props.docList && this.props.docList.map(this.renderDoctrine)}
         </div>
-        {this.state.adding && <AddDoctrineForm />}
+        {this.state.adding && (
+          <AddDoctrineForm
+            onClose={() => {
+              this.toggleAdd();
+            }}
+          />
+        )}
         {this.props.user.isAdmin && (
-          <button onClick={this.toggleAdd}>
-            {this.state.adding ? "Hide Add Form" : "Add Doctrine"}
-          </button>
+          <button onClick={this.toggleAdd}>Add Doctrine</button>
         )}
         <div>
           <Link to="/fits">See All Fits</Link>

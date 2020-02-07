@@ -2,11 +2,36 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import devURL from "./assets/proxy.js";
 import styled from "styled-components";
+import FitButton from "./FitButtons";
+
+const BackgroundBlur = styled.div`
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  z-index: 9;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.8);
+`;
+const ExitButton = styled.button`
+  background-color: red;
+  border: 2px solid darkred;
+  justify-self: right;
+`;
 
 const FormStyle = styled.div`
   background-color: #171516;
   color: #c6f8ff;
   padding: 20px;
+  width: 50vw;
+  height: 90vh;
+  position: absolute;
+  z-index: 10;
+  top: 0px;
+  left: 0px;
+  margin-right: 24vw;
+  margin-left: 24vw;
+  margin-top: 4vh;
   .button-fit {
     border: 2px solid #388ba0;
     background-color: inherit;
@@ -22,7 +47,7 @@ const FormStyle = styled.div`
 class UnconnectedAddDoctrineForm extends Component {
   constructor(props) {
     super(props);
-    this.state = { fits: [] };
+    this.state = { fits: [], stage: 0 };
   }
   inputHandler = event => {
     this.setState({ [event.target.name]: event.target.value });
@@ -51,6 +76,7 @@ class UnconnectedAddDoctrineForm extends Component {
     });
   };
   toggleFit = event => {
+    console.log(event.target);
     if (this.state.fits.includes(event.target.name)) {
       let newFits = this.state.fits.filter(fitId => {
         return fitId != event.target.name;
@@ -62,39 +88,40 @@ class UnconnectedAddDoctrineForm extends Component {
     }
   };
   renderFits = fitData => {
-    console.log(fitData);
     return (
-      <button
-        name={fitData.id}
+      <FitButton
+        fitData={fitData}
         onClick={this.toggleFit}
         className={
           this.state.fits.includes(fitData.id)
             ? "button-selected"
             : "button-fit"
         }
-      >
-        {fitData.title}
-      </button>
+      ></FitButton>
     );
   };
   render = () => {
+    const { onClose } = this.props;
     return (
-      <FormStyle>
-        <form onSubmit={this.submitHandler}>
-          <input
-            type="text"
-            placeholder="Doctrine Name"
-            onChange={this.inputHandler}
-            value={this.state.title}
-            name="title"
-          />
-          <button>Submit</button>
-        </form>
-        <div>
-          <div>Select Fits:</div>
-          {this.props.fits && this.props.fits.map(this.renderFits)}
-        </div>
-      </FormStyle>
+      <BackgroundBlur>
+        <FormStyle>
+          <ExitButton onClick={onClose}>X</ExitButton>
+          <form onSubmit={this.submitHandler}>
+            <input
+              type="text"
+              placeholder="Doctrine Name"
+              onChange={this.inputHandler}
+              value={this.state.title}
+              name="title"
+            />
+            <button>Submit</button>
+          </form>
+          <div>
+            <div>Select Fits:</div>
+            {this.props.fits && this.props.fits.map(this.renderFits)}
+          </div>
+        </FormStyle>
+      </BackgroundBlur>
     );
   };
 }
