@@ -50,8 +50,9 @@ const LinkWrapper = styled.div`
   padding: 5vw;
   text-align: center;
   @media (min-width: 600px) {
+    padding: 0px;
     width: 100%;
-    display: flex;
+    flex-direction: row;
     justify-content: space-around;
     position: absolute;
     z-index: 10;
