@@ -11,6 +11,7 @@ const Page = styled.div`
   box-sizing: border-box;
   position: relative;
   z-index: 5;
+  background-color: rgba(0, 0, 0, 0);
 `;
 
 const Bg = styled.video`
@@ -27,6 +28,7 @@ const Wrap = styled.div`
 `;
 
 const Lonk = styled.a`
+  font-family: "Russo One", sans-serif;
   font-variant: small-caps;
   font-size: 6vh;
   font-weight: bolder;
@@ -43,39 +45,62 @@ const Lonk = styled.a`
   }
 `;
 const LinkWrapper = styled.div`
-  width: 100%;
   display: flex;
-  justify-content: space-around;
-  position: absolute;
-  z-index: 10;
-  .router-link {
-    font-variant: small-caps;
-    font-size: 5vh;
-    font-weight: bolder;
-    color: #bc992e;
-    :hover {
-      color: black;
-      -webkit-text-stroke: 1px #720d10;
+  flex-direction: column;
+  padding: 5vw;
+  text-align: center;
+  @media (min-width: 600px) {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    position: absolute;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0);
+    .router-link {
+      font-family: "Russo One", sans-serif;
+      font-variant: small-caps;
+      font-size: 6vh;
+      font-weight: bolder;
+      color: #faad14;
+      -webkit-text-stroke: 1px #820014;
+      :hover {
+        color: #820014;
+        -webkit-text-stroke: 1px #faad14;
+      }
+      :active {
+        color: #820014;
+        -webkit-text-stroke: 0px;
+      }
     }
-  }
-  .upper {
-    top: 5vh;
-  }
-  .lower {
-    bottom: 5vh;
+    .upper {
+      top: 5vh;
+    }
+    .lower {
+      bottom: 5vh;
+    }
   }
 `;
 
 const TITLE = styled.div`
-  color: rgba(0, 0, 0, 0);
-  width: 100vw;
-  height: 85vh;
   text-align: center;
-  font-size: 600px;
-  font-size: 33vw;
   box-sizing: border-box;
-  margin: auto auto auto auto;
+  width: 100vw;
+  font-size: 37vw;
   -webkit-text-stroke: 5px #bc992e;
+  color: rgba(0, 0, 0, 0);
+  @media (min-width: 600px) {
+    color: rgba(0, 0, 0, 0);
+    width: 100vw;
+    height: 85vh;
+    background-color: rgba(0, 0, 0, 0);
+    text-align: center;
+    font-size: 600px;
+    font-size: 37vw;
+    vertical-align: middle;
+    box-sizing: border-box;
+    margin: auto auto auto auto;
+    -webkit-text-stroke: 5px #bc992e;
+  }
 `;
 
 class UnconnectedLanding extends Component {

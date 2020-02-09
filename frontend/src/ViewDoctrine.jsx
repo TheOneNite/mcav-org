@@ -147,16 +147,21 @@ class UnconnectedViewDoctrine extends Component {
             <Header>Description</Header>
             {docData && docData.writeup}
           </div>
-          <div className="fitlist-wrapper">
-            <div className="wrapper-fit-tab">
-              {this.state.fitList?.map(this.renderFitList)}
+          {activeFit && (
+            <div className="fitlist-wrapper">
+              <div className="wrapper-fit-tab">
+                {this.state.fitList?.map(this.renderFitList)}
+              </div>
+              <div>
+                <CopyButton mode="eft" fitData={this.state.fitObj[activeFit]} />
+                <CopyButton
+                  mode="multibuy"
+                  fitData={this.state.fitObj[activeFit]}
+                />
+              </div>
+              {this.renderFit(activeFit)}
             </div>
-            <div>
-              <CopyButton mode="eft" />
-              <CopyButton mode="multibuy" />
-            </div>
-            {activeFit && this.renderFit(activeFit)}
-          </div>
+          )}
         </div>
       </Style>
     );
