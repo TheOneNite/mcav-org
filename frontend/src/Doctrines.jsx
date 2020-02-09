@@ -1,9 +1,23 @@
 import React, { Component } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-
+import styled from "styled-components";
 import AddDoctrineForm from "./AddDoctrineForm.jsx";
 import { getDoctrines } from "./assets/networking.js";
+import { Title } from "./styles/globalStyles";
+
+const DoctrinePage = styled.div`
+  padding: 25px;
+  font-family: "Source Code Pro", monospace;
+  background-color: #0d0d0e;
+  color: #d48806;
+  .doctrine-link {
+    margin: 1em;
+  }
+`;
+const AddButton = styled.button`
+  margin-left: 1em;
+`;
 
 class UnconnectedDoctrines extends Component {
   constructor(props) {
@@ -28,7 +42,7 @@ class UnconnectedDoctrines extends Component {
   };
   renderDoctrine = docData => {
     return (
-      <div>
+      <div className="doctrine-link">
         <img src={docData.icon} alt="" />
         <Link to={"/doctrine/" + docData.id}>{docData.name}</Link>
       </div>
@@ -46,8 +60,8 @@ class UnconnectedDoctrines extends Component {
       return <Redirect to="/login" />;
     }
     return (
-      <div>
-        <div>Doctrines</div>
+      <DoctrinePage>
+        <Title>Doctrines</Title>
         <div>
           {this.props.docList && this.props.docList.map(this.renderDoctrine)}
         </div>
@@ -59,12 +73,12 @@ class UnconnectedDoctrines extends Component {
           />
         )}
         {this.props.user.isAdmin && (
-          <button onClick={this.toggleAdd}>Add Doctrine</button>
+          <AddButton onClick={this.toggleAdd}>Add Doctrine</AddButton>
         )}
-        <div>
+        <div style={{ margin: "1em" }}>
           <Link to="/fits">See All Fits</Link>
         </div>
-      </div>
+      </DoctrinePage>
     );
   };
 }

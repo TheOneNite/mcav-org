@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 
 class FitButton extends Component {
   constructor(props) {
@@ -9,9 +10,12 @@ class FitButton extends Component {
     this.setState({ expand: !this.state.expand });
   };
   render = () => {
-    const { name } = this.props;
+    const { name, className } = this.props;
     return (
-      <button onClick={() => this.props.handleRoute(this.props.id)}>
+      <button
+        onClick={() => this.props.handleRoute(this.props.id)}
+        className={className}
+      >
         {name}
       </button>
     );

@@ -2,20 +2,28 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-
+import { Header, Title } from "./styles/globalStyles";
 import AddDoctrineForm from "./AddDoctrineForm.jsx";
 import EditDoctrine from "./EditDoctrine.jsx";
 import FitTab from "./FitTab.jsx";
+import CopyButton from "./CopyButton";
 
 import { getDoctrines, getFitSingle } from "./assets/networking.js";
 
 const Style = styled.div`
+  color: #e0cdb3;
+  padding: 25px;
   .fitlist-wrapper {
-    width: 50%;
+    width: min-content;
+    max-width: 50%;
     overflow-y: auto;
-    display: flex;
     flex-wrap: wrap;
-    padding: 25px;
+    border: 2px solid #a8071a;
+  }
+  .wrapper-fit-tab {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
   }
   .writeup-wrapper {
     width: 50%;
@@ -25,15 +33,32 @@ const Style = styled.div`
   }
   .fit-wrapper {
     width: max-content;
+    margin: 1em;
   }
   .doctrine-wrapper {
     display: flex;
     width: 90vw;
   }
-`;
-
-const Header = styled.h3`
-  font-variant: small-caps;
+  .doctrine-fit {
+    border-width: 0px;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
+    padding: 1em;
+    width: 100%;
+    min-width: min-content;
+    word-wrap: none;
+    outline: none;
+    font-variant: small-caps;
+    font-size: 2vh;
+    font-weight: bold;
+    :nth-child(1) {
+      border-left-width: 0px;
+    }
+  }
+  .tab-active {
+    border-bottom-width: 0px;
+    cursor: default;
+  }
 `;
 
 class UnconnectedViewDoctrine extends Component {
@@ -67,11 +92,19 @@ class UnconnectedViewDoctrine extends Component {
     this.setState({ activeFit: id });
   };
   renderFitList = fitData => {
+    const getStyle = () => {
+      const className = "doctrine-fit";
+      if (fitData.id === this.state.activeFit) {
+        return className + " tab-active";
+      }
+      return className;
+    };
     return (
       <FitTab
         id={fitData.id}
         name={fitData.title}
         handleRoute={this.setActiveFit}
+        className={getStyle()}
       />
     );
   };
@@ -106,7 +139,7 @@ class UnconnectedViewDoctrine extends Component {
     return (
       <Style>
         <Link to="/doctrines">Doctrines Home</Link>
-        <h2>{this.state.docData && this.state.docData.name}</h2>
+        <Title>{this.state.docData && this.state.docData.name}</Title>
         {user.isAdmin && <button onClick={this.toggleEdit}>Edit</button>}
         {this.state.editing && <AddDoctrineForm edit={true} />}
         <div className="doctrine-wrapper">
@@ -115,7 +148,13 @@ class UnconnectedViewDoctrine extends Component {
             {docData && docData.writeup}
           </div>
           <div className="fitlist-wrapper">
-            {this.state.fitList?.map(this.renderFitList)}
+            <div className="wrapper-fit-tab">
+              {this.state.fitList?.map(this.renderFitList)}
+            </div>
+            <div>
+              <CopyButton mode="eft" />
+              <CopyButton mode="multibuy" />
+            </div>
             {activeFit && this.renderFit(activeFit)}
           </div>
         </div>
