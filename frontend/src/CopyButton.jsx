@@ -52,6 +52,7 @@ class CopyButton extends Component {
     return (
       <FillButton
         onClick={() => {
+          console.log(navigator);
           navigator.clipboard.writeText(this.state.copyStr).then(copyRes => {
             console.log(copyRes);
             console.log("copy success");
