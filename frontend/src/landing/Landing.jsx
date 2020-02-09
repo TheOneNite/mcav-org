@@ -28,14 +28,18 @@ const Wrap = styled.div`
 
 const Lonk = styled.a`
   font-variant: small-caps;
-  font-size: 5vh;
+  font-size: 6vh;
   font-weight: bolder;
-  color: #720d10;
+  color: #820014;
   text-decoration: none;
-  -webkit-text-stroke: 2px black;
+  -webkit-text-stroke: 1px #faad14;
   :hover {
-    color: black;
-    -webkit-text-stroke: 1px #720d10;
+    color: #faad14;
+    -webkit-text-stroke: 1px #820014;
+  }
+  :active {
+    color: #ffc53d;
+    -webkit-text-stroke: 0px;
   }
 `;
 const LinkWrapper = styled.div`
