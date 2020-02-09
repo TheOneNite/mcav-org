@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 const FillButton = styled.button`
   width: 100%;
+  border-width: 0px;
+  border-bottom-width: 2px;
 `;
 class CopyButton extends Component {
   constructor(props) {
@@ -51,6 +53,7 @@ class CopyButton extends Component {
       <FillButton
         onClick={() => {
           navigator.clipboard.writeText(this.state.copyStr).then(copyRes => {
+            console.log(copyRes);
             console.log("copy success");
             this.setState({ displayTxt: "copied!" }, () => {
               setTimeout(() => {
