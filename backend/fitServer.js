@@ -1,9 +1,10 @@
 let express = require("express");
 let app = express();
+const https = require("https");
 let cookieParser = require("cookie-parser");
 app.use(cookieParser({}));
 let request = require("request");
-
+const fs = require("fs");
 let multer = require("multer");
 const upload = multer();
 const cors = require("cors");
@@ -262,7 +263,19 @@ app.all("/*", (req, res, next) => {
   // needed for react router
   res.sendFile(__dirname + "/build/index.html");
 });
+https
+  .createServer(
+    {
+      key: fs.readFileSync("./compayn.space.key.txt"),
+      cert: fs.readFileSync("./compayn.space.crt"),
+      passphrase: "enyos"
+    },
+    app
+  )
+  .listen(8080);
 
+/*
 app.listen(8080, "0.0.0.0", () => {
   console.log("Server running on port 8080");
 });
+*/

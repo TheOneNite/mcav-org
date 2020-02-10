@@ -12,6 +12,8 @@
       "resolved": "https://registry.npmjs.org/cors/-/cors-2.8.5.tgz",
       "version": "2.8.5"
     },
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
     "object-assign": {
       "integrity": "sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=",
       "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz",
