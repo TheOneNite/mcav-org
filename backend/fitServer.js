@@ -260,6 +260,8 @@ app.get("/doctrines", (req, res) => {
 // Your endpoints go before this line
 
 app.all("/*", (req, res, next) => {
+  console.log("mcavFits");
+  console.log(req.path);
   // needed for react router
   res.sendFile(__dirname + "/build/index.html");
 });
