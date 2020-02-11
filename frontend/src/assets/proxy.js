@@ -5,7 +5,7 @@ const devURL = "https://compayn.space:8080";
 export const proxyBuilder = build => {
   switch (build) {
     case "redirect-beta":
-      return "https://compayn.space:3000";
+      return "https://compayn.space";
     case "server-beta":
       return "https://compayn.space:8080";
     default:
