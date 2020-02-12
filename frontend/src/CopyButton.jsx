@@ -13,7 +13,7 @@ class CopyButton extends Component {
       defaultDisplay: `Copy ${this.props.mode} to Clipboard`
     };
   }
-  componentDidMount = () => {
+  generateCopyTxt = mode => {
     const generateMultibuy = () => {
       const getHull = topLine => {
         let hull = topLine.split(",").shift();
@@ -36,32 +36,46 @@ class CopyButton extends Component {
       fitLines = fitLines.concat(ammo);
       return fitLines.join("\n");
     };
+    if (mode === "eft") {
+      console.log(this.props.fitData, "IHOQFHOQFHO");
+      this.setState({ copyStr: this.props.fitData.fit });
+    } else {
+      this.setState({ copyStr: generateMultibuy() });
+    }
+  };
+  componentDidMount = () => {
+    // component props don't change between ship tabs so it is not re-rendered and consequently the copy string never changes.  basically this is the same component and the prop is just hotswapped?
     if (this.props.mode === "eft") {
       this.setState({
-        copyStr: this.props.fitData.fit,
         displayTxt: this.state.defaultDisplay
       });
-      return;
+    } else {
+      this.setState({
+        displayTxt: this.state.defaultDisplay
+      });
     }
-    this.setState({
-      copyStr: generateMultibuy(),
-      displayTxt: this.state.defaultDisplay
-    });
+    this.generateCopyTxt(this.props.mode);
   };
   render = () => {
+    const { mode } = this.props;
+    console.log(this.props.fitData);
+    console.log(this.state.copyStr, mode);
     return (
       <FillButton
         onClick={() => {
           console.log(navigator);
-          navigator.clipboard.writeText(this.state.copyStr).then(copyRes => {
-            console.log(copyRes);
-            console.log("copy success");
-            this.setState({ displayTxt: "copied!" }, () => {
-              setTimeout(() => {
-                this.setState({ displayTxt: this.state.defaultDisplay });
-              }, 750);
+          // call copy string generator here when the button is clicked so that it will copy the correct fit? doesnt work
+          navigator.clipboard
+            .writeText(this.generateCopyTxt(mode))
+            .then(copyRes => {
+              console.log(copyRes);
+              console.log("copy success");
+              this.setState({ displayTxt: "copied!" }, () => {
+                setTimeout(() => {
+                  this.setState({ displayTxt: this.state.defaultDisplay });
+                }, 750);
+              });
             });
-          });
         }}
       >
         {this.state.displayTxt}

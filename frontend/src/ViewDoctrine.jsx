@@ -109,6 +109,7 @@ class UnconnectedViewDoctrine extends Component {
     );
   };
   renderFit = active => {
+    const { activeFit, fitObj } = this.state;
     console.log(this.state);
     console.log(active);
     const fitData = this.state.fitObj[active];
@@ -119,11 +120,19 @@ class UnconnectedViewDoctrine extends Component {
       }
       return <br></br>;
     });
-    return <div className="fit-wrapper">{fitLines}</div>;
+    return (
+      <div>
+        <div>
+          <CopyButton mode="eft" fitData={fitObj[activeFit]} />
+          <CopyButton mode="multibuy" fitData={fitObj[activeFit]} />
+        </div>
+        <div className="fit-wrapper">{fitLines}</div>;
+      </div>
+    );
   };
   render = () => {
     const { user } = this.props;
-    const { activeFit, docData } = this.state;
+    const { activeFit, docData, fitObj } = this.state;
     if (this.state.editing) {
       return (
         <Style>
@@ -136,6 +145,7 @@ class UnconnectedViewDoctrine extends Component {
         </Style>
       );
     }
+    console.log(activeFit);
     return (
       <Style>
         <Link to="/doctrines">Doctrines Home</Link>
@@ -151,13 +161,6 @@ class UnconnectedViewDoctrine extends Component {
             <div className="fitlist-wrapper">
               <div className="wrapper-fit-tab">
                 {this.state.fitList?.map(this.renderFitList)}
-              </div>
-              <div>
-                <CopyButton mode="eft" fitData={this.state.fitObj[activeFit]} />
-                <CopyButton
-                  mode="multibuy"
-                  fitData={this.state.fitObj[activeFit]}
-                />
               </div>
               {this.renderFit(activeFit)}
             </div>
