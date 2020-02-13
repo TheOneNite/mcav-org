@@ -38,9 +38,9 @@ class CopyButton extends Component {
     };
     if (mode === "eft") {
       console.log(this.props.fitData, "IHOQFHOQFHO");
-      this.setState({ copyStr: this.props.fitData.fit });
+      return this.props.fitData.fit;
     } else {
-      this.setState({ copyStr: generateMultibuy() });
+      return generateMultibuy();
     }
   };
   componentDidMount = () => {
