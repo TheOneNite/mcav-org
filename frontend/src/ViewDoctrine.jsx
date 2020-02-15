@@ -64,7 +64,7 @@ const Style = styled.div`
 class UnconnectedViewDoctrine extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { editing: true };
   }
   componentDidMount = () => {
     this.loadDoctrine(this.props.match.params.docId);

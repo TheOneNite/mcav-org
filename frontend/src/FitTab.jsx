@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
+const TabButton = styled.button`
+  width: "min-content";
+`;
+
 class FitButton extends Component {
   constructor(props) {
     super(props);
@@ -12,12 +16,12 @@ class FitButton extends Component {
   render = () => {
     const { name, className } = this.props;
     return (
-      <button
+      <TabButton
         onClick={() => this.props.handleRoute(this.props.id)}
         className={className}
       >
         {name}
-      </button>
+      </TabButton>
     );
   };
 }
