@@ -281,7 +281,6 @@ app.all("/*", (req, res, next) => {
   res.sendFile(__dirname + "/build/index.html");
 });
 
-/*
 https
   .createServer(
     {
@@ -292,8 +291,9 @@ https
     app
   )
   .listen(8080);
-  */
 
-app.listen(8080, "0.0.0.0", () => {
-  console.log("Server running on port 8080");
-});
+/*
+  app.listen(8080, "0.0.0.0", () => {
+    console.log("Server running on port 8080");
+  });
+  */
