@@ -1,7 +1,14 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 import VisibilityDropdown from "./VisibilityDropdown.jsx";
-
 import devURL from "./assets/proxy.js";
+
+const FitInput = styled.textarea`
+  width: 40vw;
+  height: 400px;
+  background-color: inherit;
+  color: inherit;
+`;
 
 class AddFitForm extends Component {
   constructor(props) {
@@ -54,7 +61,7 @@ class AddFitForm extends Component {
             value={this.state.name}
           />
           <VisibilityDropdown onChange={this.dropdownHandler} />
-          <textarea
+          <FitInput
             placeholder="paste EFT formatted fit here"
             name="fitStr"
             onChange={this.fitPasteHandler}

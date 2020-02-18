@@ -236,7 +236,22 @@ app.post("/add-doctrine", upload.none(), (req, res) => {
   });
 });
 app.post("/doctrine-update", upload.none(), (req, res) => {
-  mongo.collection("doctrines");
+  console.log("POST /doctrine-update");
+  const docData = JSON.parse(req.body.payload);
+  console.log("incoming", docData);
+  const docId = docData.id;
+  mongo
+    .collection("doctrines")
+    .updateOne({ id: docId }, { $set: docData }, (err, dbDoc) => {
+      if (err) {
+        console.log(err);
+        res.status(500);
+        res.send(JSON.stringify({ success: false, msg: "db error" }));
+        return;
+      }
+      console.log("updated doctrine " + docData.name);
+      res.send(JSON.stringify({ success: true }));
+    });
 });
 app.get("/doctrines", (req, res) => {
   console.log("GET/doctrines");
@@ -265,6 +280,8 @@ app.all("/*", (req, res, next) => {
   // needed for react router
   res.sendFile(__dirname + "/build/index.html");
 });
+
+/*
 https
   .createServer(
     {
@@ -275,9 +292,8 @@ https
     app
   )
   .listen(8080);
+  */
 
-/*
 app.listen(8080, "0.0.0.0", () => {
   console.log("Server running on port 8080");
 });
-*/

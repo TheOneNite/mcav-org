@@ -8,7 +8,7 @@ import EditDoctrine from "./EditDoctrine.jsx";
 import FitTab from "./FitTab.jsx";
 import CopyButton from "./CopyButton";
 
-import { getDoctrines, getFitSingle } from "./assets/networking.js";
+import { getDoctrines, getFitSingle, getFits } from "./assets/networking.js";
 
 const Style = styled.div`
   color: #e0cdb3;
@@ -23,7 +23,8 @@ const Style = styled.div`
   .wrapper-fit-tab {
     width: 100%;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: right;
+    overflow-x: auto;
   }
   .writeup-wrapper {
     width: 50%;
@@ -64,8 +65,9 @@ const Style = styled.div`
 class UnconnectedViewDoctrine extends Component {
   constructor(props) {
     super(props);
-    this.state = { editing: true };
+    this.state = { editing: false };
   }
+  loadFits;
   componentDidMount = () => {
     this.loadDoctrine(this.props.match.params.docId);
   };
@@ -133,14 +135,18 @@ class UnconnectedViewDoctrine extends Component {
   render = () => {
     const { user } = this.props;
     const { activeFit, docData, fitObj } = this.state;
+    if (docData === undefined) {
+      return <div>Loading....</div>;
+    }
     if (this.state.editing) {
       return (
         <Style>
           <a href="/">Home</a>
           <EditDoctrine
-            name={this.state.docData.name}
+            name={docData.name}
             fits={this.state.fitList}
-            id={this.state.docData.id}
+            id={docData.id}
+            docData={docData}
           />
         </Style>
       );

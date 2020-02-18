@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 
 const TabButton = styled.button`
-  width: "min-content";
+  width: "max-content";
 `;
 
 class FitButton extends Component {

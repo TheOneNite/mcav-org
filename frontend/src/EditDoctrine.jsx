@@ -4,19 +4,33 @@ import styled from "styled-components";
 import devURL from "./assets/proxy.js";
 
 import AddDoctrineForm from "./AddDoctrineForm.jsx";
+import FitSelector from "./FitSelector";
 
-import { getDoctrines, getFitSingle } from "./assets/networking.js";
+import { getDoctrines, getFitSingle, getFits } from "./assets/networking.js";
 
 const Style = styled.div`
-  .fitlist-wrapper {
+  width: 50vw;
+  .fit-selector-wrapper {
+    margin-top: 1em;
+    margin-bottom: 1em;
     display: flex;
     flex-wrap: wrap;
+    width: 100%;
   }
   .fit-wrapper {
     padding: 20px;
   }
   .input-title {
     font-size: 36px;
+    padding: 10px;
+  }
+  .input-description {
+    padding: 1em;
+    background-color: inherit;
+    color: #e0cdb3;
+    outline: none;
+    width: 50vw;
+    height: 400px;
   }
 `;
 
@@ -26,19 +40,49 @@ class UnconnectedEditDoctrine extends Component {
     this.state = {
       name: this.props.name,
       fitList: this.props.fits,
-      editFits: []
+      editFits: [],
+      writeup: this.props.docData.writeup
     };
   }
+  componentDidMount = () => {
+    this.loadFits();
+  };
+  loadFits = async () => {
+    const allFits = await getFits();
+    this.setState({ allFits });
+  };
   saveEdits = async event => {
+    console.log("submitting");
     event.preventDefault();
     let data = new FormData();
-    data.append("id", this.props.id);
-    data.append("fits", this.state.fitList);
-    data.append("name", this.state.name);
+    const fitIds = this.state.fitList.map(fitData => {
+      return fitData.id;
+    });
+    let fitData = {
+      id: this.props.id,
+      fits: fitIds,
+      name: this.state.name,
+      writeup: this.state.writeup
+    };
+    fitData = JSON.stringify(fitData);
+    data.append("payload", fitData);
     const res = await fetch(devURL + "/doctrine-update", {
       method: "POST",
       body: data
     });
+    let bod = await res.text();
+    bod = JSON.parse(bod);
+    if (bod.success) {
+      window.location.reload();
+      return;
+    }
+    alert(bod.message);
+  };
+  revert = () => {
+    if (window.confirm("Are you sure you want to discard all changes?")) {
+      window.location.reload();
+      return;
+    }
   };
   inputHandler = event => {
     this.setState({ [event.target.name]: event.target.value });
@@ -84,6 +128,14 @@ class UnconnectedEditDoctrine extends Component {
     });
     this.setState({ fitList: newFits });
   };
+  addFit = id => {
+    console.log("add", id);
+    let addFit = this.state.allFits.filter(fitData => {
+      return fitData.id === id;
+    })[0];
+    let newFitList = this.state.fitList.concat(addFit);
+    this.setState({ fitList: newFitList });
+  };
   confirmDelete = event => {
     if (window.confirm("Confirm Fit Deletion")) {
       this.deleteFit(event.target.name);
@@ -128,8 +180,30 @@ class UnconnectedEditDoctrine extends Component {
       </div>
     );
   };
+  renderAllFits = () => {
+    if (this.state.allFits === undefined) {
+      return <div>Loading....</div>;
+    }
+    let fitIds = this.state.fitList.map(fitData => {
+      return fitData.id;
+    });
+    return this.state.allFits.map(fitData => {
+      let selected = fitIds.includes(fitData.id);
+      console.log(selected);
+      return (
+        <FitSelector
+          fitName={fitData.title}
+          defaultSelected={selected}
+          onSelect={this.addFit}
+          onDeselect={this.deleteFit}
+          name={fitData.id}
+        />
+      );
+    });
+  };
   render = () => {
     console.log(this.state);
+    const { docData } = this.props;
     return (
       <Style>
         <input
@@ -140,10 +214,14 @@ class UnconnectedEditDoctrine extends Component {
           className="input-title"
         />
         <button onClick={this.saveEdits}>Save</button>
-        <div></div>
-        <div className="fitlist-wrapper">
-          {this.state.fitList && this.state.fitList.map(this.fitEdit)}
-        </div>
+        <button onClick={this.revert}>Cancel</button>
+        <div className="fit-selector-wrapper">{this.renderAllFits()}</div>
+        <textarea
+          className="input-description"
+          value={this.state.writeup}
+          onChange={this.inputHandler}
+          name="writeup"
+        />
       </Style>
     );
   };
