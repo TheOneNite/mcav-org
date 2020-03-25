@@ -272,6 +272,95 @@ app.get("/doctrines", (req, res) => {
     });
 });
 
+// TIMERBOARD ENDPOINTS -----------------------------------------------------------------------------
+
+app.post("/add-timer", upload.none(), (req, res) => {
+  const uid = getUIDbySID(req.cookies.sid);
+  console.log(uid);
+  const verifyInput = body => {
+    const structures = [
+      "astrahus",
+      "fortizar",
+      "raitaru",
+      "azbel",
+      "athanor",
+      "tatara"
+    ];
+    if (body.contact === undefined) {
+      return {
+        success: false,
+        msg: "you must include a timer point of contact"
+      };
+    }
+    if (body.stage === undefined) {
+      return {
+        success: false,
+        msg: "you must include a timer type"
+      };
+    }
+    if (!structures.includes(body.type)) {
+      return {
+        success: false,
+        msg: "you must include a structure type"
+      };
+    }
+    if (body.duration === undefined) {
+      return { success: false, msg: "you must include a timer duration" };
+    }
+    return true;
+  };
+  if (verifyInput(req.body) === true) {
+    const record = {
+      id: generateId(10),
+      structure: body.type,
+      stage: body.stage,
+      contact: body.contact,
+      timer: body.duration
+    };
+    mongo
+      .collection("q003-timers")
+      .insertOne({ data: record }, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send(JSON.stringify({ success: false, msg: err }));
+        }
+        res.send(JSON.stringify({ success: true }));
+      });
+    return;
+  }
+  res.send(JSON.stringify(verifyInput(req.body)));
+});
+app.get("/all-timers", (req, res) => {
+  console.log("GET:/all-timers");
+  const uid = getUIDbySID(req.cookies.sid);
+  mongo
+    .collection("q003-timers")
+    .find({ expired: false })
+    .toArray((err, allTimers) => {
+      if (err) {
+        console.log(err);
+        res.send(JSON.stringify(["Database Error"]));
+        return;
+      }
+      const timersList = allTimers.map(dbTimer => dbTimer.data);
+      res.send(JSON.stringify({ success: true, timersList: timersList }));
+    });
+});
+app.get("/timer-details", (req, res) => {
+  console.log("GET/timer-details", req.query.id);
+  const uid = getUIDbySID(req.cookies.sid);
+  mongo
+    .collection("q003-timers")
+    .findOne({ id: req.query.id }, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.send(JSON.stringify({ success: false, msg: err }));
+        return;
+      }
+      res.send({ success: true, timerData: result.data });
+    });
+});
+
 // Your endpoints go before this line
 
 app.all("/*", (req, res, next) => {

@@ -3,12 +3,14 @@ import { proxyBuilder } from "./assets/proxy.js";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import Portal from "./portal/Portal.jsx";
 import Fits from "./Fits.jsx";
 import ViewDoctrine from "./ViewDoctrine.jsx";
 import Doctrines from "./Doctrines.jsx";
 import Landing from "./landing/Landing.jsx";
 import Auth from "./Auth.jsx";
 import AuthSSO from "./Auth-SSO.jsx";
+import Timerboard from "./routes/q003/timerboard/Timerboard.jsx";
 
 // "server-beta"
 const uri = proxyBuilder("server-beta");
@@ -42,9 +44,11 @@ class UnconnectedRouter extends Component {
     console.log(this.props.login);
     return (
       <Switch>
+        <Route exact={true} path="/" component={Portal} />
         <Route exact={true} path="/login" component={Auth} />
         <Route exact={true} path="/sso-auth" component={AuthSSO}></Route>
-        <Route exact={true} path="/" component={Landing} />
+        <Route exact={true} path="/mcav" component={Landing} />
+        <Route exact={true} path="/q003" component={Timerboard} />
         {this.props.login ? (
           <>
             <Route exact={true} path="/fits" component={Fits} />
