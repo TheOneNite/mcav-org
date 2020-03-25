@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import devURL from "./assets/proxy.js";
 import styled from "styled-components";
+import FitSelector from "./FitSelector";
 import FitButton from "./FitButtons";
 
 const BackgroundBlur = styled.div`
@@ -74,30 +75,33 @@ class UnconnectedAddDoctrineForm extends Component {
       method: "POST",
       body: data
     });
+    let bod = await res.text();
+    bod = JSON.parse(bod);
+    if (bod.success) {
+      alert("Fit added successfully");
+      this.props.onClose();
+    }
   };
-  toggleFit = event => {
-    console.log(event.target);
-    if (this.state.fits.includes(event.target.name)) {
+  toggleFit = buttonFitId => {
+    if (this.state.fits.includes(buttonFitId)) {
       let newFits = this.state.fits.filter(fitId => {
-        return fitId != event.target.name;
+        return fitId != buttonFitId;
       });
       this.setState({ fits: newFits });
     } else {
-      let newFits = this.state.fits.concat(event.target.name);
+      let newFits = this.state.fits.concat(buttonFitId);
       this.setState({ fits: newFits });
     }
   };
   renderFits = fitData => {
     return (
-      <FitButton
-        fitData={fitData}
-        onClick={this.toggleFit}
-        className={
-          this.state.fits.includes(fitData.id)
-            ? "button-selected"
-            : "button-fit"
-        }
-      ></FitButton>
+      <FitSelector
+        fitName={fitData.title}
+        defaultSelected={false}
+        onSelect={this.toggleFit}
+        onDeselect={this.toggleFit}
+        name={fitData.id}
+      ></FitSelector>
     );
   };
   render = () => {
