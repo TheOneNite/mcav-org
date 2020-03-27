@@ -18,6 +18,7 @@ var mongo = undefined;
 MongoClient.connect(dbLogin, (err, dbRef) => {
   if (err) {
     console.log(err);
+    return;
   }
   console.log("DB connected");
   mongo = dbRef.db("doctrines");

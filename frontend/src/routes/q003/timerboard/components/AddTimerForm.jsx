@@ -11,6 +11,7 @@ const Section = styled.div`
 
 const AddTimerForm = () => {
   const [duration, setDuration] = useState({ d: 1, h: 17, m: 59 });
+  const [contact, setContact] = useState();
   const [enteredAt, setEnteredAt] = useState();
   const structures = [
     "astrahus",
@@ -21,7 +22,17 @@ const AddTimerForm = () => {
     "tatara"
   ];
   const [isActive, setIsActive] = useState(true);
-  const handleAddTimer = () => {};
+  const handleAddTimer = e => {
+    e.preventDefault();
+    console.log(duration);
+    console.log("contact", contact);
+  };
+  const handleDurationInput = e => {
+    setDuration({ ...duration, [e.target.name]: e.target.value });
+  };
+  const handleContactInput = e => {
+    setContact(e.target.value);
+  };
   const renderCurrentTime = () => {
     return <div>{moment().format("lll") + "  +"}</div>;
   };
@@ -37,7 +48,7 @@ const AddTimerForm = () => {
             {"Structure Type: "}
             <select>
               {structures.map(name => {
-                return <option vlaue={name}>{name}</option>;
+                return <option value={name}>{name}</option>;
               })}
             </select>
           </Section>
@@ -52,15 +63,40 @@ const AddTimerForm = () => {
             RF length (from now)
             <div>
               {renderCurrentTime()}
-              <input placeholder="DD" size={2} value={duration.d} />
-              <input placeholder="HH" size={2} value={duration.h} />
-              <input placeholder="MM" size={2} value={duration.m} />
+              <input
+                placeholder="DD"
+                size={2}
+                value={duration.d}
+                name="d"
+                onChange={handleDurationInput}
+              />
+              <input
+                placeholder="HH"
+                size={2}
+                value={duration.h}
+                name="h"
+                onChange={handleDurationInput}
+              />
+              <input
+                placeholder="MM"
+                size={2}
+                value={duration.m}
+                name="m"
+                onChange={handleDurationInput}
+              />
               {verifyDuration()}
             </div>
           </Section>
           <Section>
             {"Contact Person: "}
-            <input />
+            <input
+              placeholder="Character name"
+              onChange={handleContactInput}
+              value={contact}
+            />
+          </Section>
+          <Section>
+            <Button>Save</Button>
           </Section>
         </div>
       </form>
@@ -68,7 +104,6 @@ const AddTimerForm = () => {
   };
   return (
     <div style={{ padding: "2rem" }}>
-      <Title>Active Timers</Title>
       {isActive ? (
         renderForm()
       ) : (
