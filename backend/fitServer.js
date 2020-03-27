@@ -276,9 +276,11 @@ app.get("/doctrines", (req, res) => {
 // TIMERBOARD ENDPOINTS -----------------------------------------------------------------------------
 
 app.post("/add-timer", upload.none(), (req, res) => {
+  console.log("POST/add-timer");
   const uid = getUIDbySID(req.cookies.sid);
   console.log(uid);
-  const verifyInput = body => {
+  const payload = JSON.parse(req.body.payload);
+  const verifyInput = input => {
     const structures = [
       "astrahus",
       "fortizar",
@@ -287,36 +289,39 @@ app.post("/add-timer", upload.none(), (req, res) => {
       "athanor",
       "tatara"
     ];
-    if (body.contact === undefined) {
+    console.log(input);
+    if (input.contact === undefined) {
       return {
         success: false,
         msg: "you must include a timer point of contact"
       };
     }
-    if (body.stage === undefined) {
+    if (input.stage === undefined) {
       return {
         success: false,
         msg: "you must include a timer type"
       };
     }
-    if (!structures.includes(body.type)) {
+    if (!structures.includes(input.structure)) {
       return {
         success: false,
         msg: "you must include a structure type"
       };
     }
-    if (body.duration === undefined) {
+    if (input.exits === undefined) {
       return { success: false, msg: "you must include a timer duration" };
     }
     return true;
   };
-  if (verifyInput(req.body) === true) {
+  console.log(verifyInput(payload));
+  if (verifyInput(payload) === true) {
     const record = {
       id: generateId(10),
-      structure: body.type,
-      stage: body.stage,
-      contact: body.contact,
-      timer: body.duration
+      structure: payload.structure,
+      stage: payload.stage,
+      contact: payload.contact,
+      timer: payload.exits,
+      expired: false
     };
     mongo
       .collection("q003-timers")
@@ -329,18 +334,17 @@ app.post("/add-timer", upload.none(), (req, res) => {
       });
     return;
   }
-  res.send(JSON.stringify(verifyInput(req.body)));
+  res.send(JSON.stringify(verifyInput(payload)));
 });
 app.get("/all-timers", (req, res) => {
   console.log("GET:/all-timers");
   const uid = getUIDbySID(req.cookies.sid);
   mongo
     .collection("q003-timers")
-    .find({ expired: false })
+    .find({})
     .toArray((err, allTimers) => {
-      if (err) {
-        console.log(err);
-        res.send(JSON.stringify(["Database Error"]));
+      if (allTimers === null) {
+        res.send(JSON.stringify({ success: false, msg: "null result" }));
         return;
       }
       const timersList = allTimers.map(dbTimer => dbTimer.data);
@@ -371,6 +375,7 @@ app.all("/*", (req, res, next) => {
   res.sendFile(__dirname + "/build/index.html");
 });
 
+/*
 https
   .createServer(
     {
@@ -381,9 +386,8 @@ https
     app
   )
   .listen(8080);
-
-/*
-  app.listen(8080, "0.0.0.0", () => {
-    console.log("Server running on port 8080");
-  });
   */
+
+app.listen(8080, "0.0.0.0", () => {
+  console.log("Server running on port 8080");
+});

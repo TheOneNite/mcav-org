@@ -7,12 +7,16 @@ import tz from "moment-timezone";
 const Section = styled.div`
   margin-right: 1rem;
   display: flex;
+  height: min-content;
 `;
 
 const AddTimerForm = () => {
-  const [duration, setDuration] = useState({ d: 1, h: 17, m: 59 });
+  const [duration, setDuration] = useState({});
   const [contact, setContact] = useState();
-  const [enteredAt, setEnteredAt] = useState();
+  const [enteredAt, setEnteredAt] = useState(moment());
+  const [stage, setStage] = useState("armor");
+  const [structure, setStructure] = useState("astrahus");
+  const [newAdd, setNewAdd] = useState(false);
   const structures = [
     "astrahus",
     "fortizar",
@@ -22,84 +26,143 @@ const AddTimerForm = () => {
     "tatara"
   ];
   const [isActive, setIsActive] = useState(true);
-  const handleAddTimer = e => {
+  const handleAddTimer = async e => {
     e.preventDefault();
-    console.log(duration);
-    console.log("contact", contact);
+    const payload = {
+      exits: enteredAt.add(duration),
+      contact,
+      structure,
+      stage
+    };
+    const data = new FormData();
+    data.append("payload", JSON.stringify(payload));
+    const res = await fetch("http://localhost:8080/add-timer", {
+      method: "POST",
+      body: data,
+      credentials: "include"
+    });
+    let bod = await res.text();
+    bod = JSON.parse(bod);
+    if ((bod.success = true)) {
+      setNewAdd(true);
+      setTimeout(() => {
+        setNewAdd(false);
+      }, 1000);
+      return;
+    }
+    window.alert(`Error adding your timer: ${bod.msg}`);
   };
   const handleDurationInput = e => {
     setDuration({ ...duration, [e.target.name]: e.target.value });
+    setEnteredAt(moment());
   };
   const handleContactInput = e => {
     setContact(e.target.value);
   };
   const renderCurrentTime = () => {
+    setTimeout(() => {
+      setNow(renderCurrentTime());
+    }, 10000);
     return <div>{moment().format("lll") + "  +"}</div>;
   };
+  const [now, setNow] = useState(renderCurrentTime());
   const verifyDuration = () => {
-    const timerExit = moment().add(duration);
-    return <div>{"= " + timerExit.format("lll")}</div>;
+    if (Object.keys(duration).length > 0) {
+      const timerExit = moment().add(duration);
+      return <div>{"= " + timerExit.format("lll")}</div>;
+    }
+    return <div style={{ color: "red" }}>please enter a timer duration</div>;
   };
   const renderForm = () => {
     return (
-      <form onSubmit={handleAddTimer}>
-        <div style={{ display: "flex" }}>
-          <Section>
-            {"Structure Type: "}
-            <select>
-              {structures.map(name => {
-                return <option value={name}>{name}</option>;
-              })}
-            </select>
-          </Section>
-          <Section>
-            {"Timer Stage: "}
-            <select>
-              <option>Armor</option>
-              <option>Structure</option>
-            </select>
-          </Section>
-          <Section>
-            RF length (from now)
-            <div>
-              {renderCurrentTime()}
+      <div style={{ display: "flex" }}>
+        <form onSubmit={handleAddTimer}>
+          <div style={{ display: "flex" }}>
+            <Section>
+              {"Structure Type: "}
+              <select
+                onChange={e => {
+                  setStructure(e.target.value);
+                }}
+              >
+                {structures.map(name => {
+                  return <option value={name}>{name}</option>;
+                })}
+              </select>
+            </Section>
+            <Section>
+              {"Timer Stage: "}
+              <select
+                onChange={e => {
+                  setStage(e.target.value);
+                }}
+              >
+                <option value="armor">Armor</option>
+                <option value="structure">Structure</option>
+              </select>
+            </Section>
+            <Section>
+              RF length (from now)
+              <div>
+                {now}
+                <input
+                  placeholder="DD"
+                  size={2}
+                  value={duration.d}
+                  name="d"
+                  onChange={handleDurationInput}
+                />
+                <input
+                  placeholder="HH"
+                  size={2}
+                  value={duration.h}
+                  name="h"
+                  onChange={handleDurationInput}
+                />
+                <input
+                  placeholder="MM"
+                  size={2}
+                  value={duration.m}
+                  name="m"
+                  onChange={handleDurationInput}
+                />
+                {verifyDuration()}
+              </div>
+            </Section>
+            <Section>
+              {"Contact Person: "}
               <input
-                placeholder="DD"
-                size={2}
-                value={duration.d}
-                name="d"
-                onChange={handleDurationInput}
+                placeholder="[CORP] Character"
+                onChange={handleContactInput}
+                value={contact}
               />
-              <input
-                placeholder="HH"
-                size={2}
-                value={duration.h}
-                name="h"
-                onChange={handleDurationInput}
-              />
-              <input
-                placeholder="MM"
-                size={2}
-                value={duration.m}
-                name="m"
-                onChange={handleDurationInput}
-              />
-              {verifyDuration()}
+            </Section>
+            <Section style={{ height: "100%" }}>
+              <Button>Save</Button>
+            </Section>
+          </div>
+          {newAdd && (
+            <div
+              style={{
+                //width: "100%",
+                backgroundColor: "#6B8DD0",
+                padding: "1ch",
+                textAlign: "center",
+                color: "#21191C"
+              }}
+            >
+              Timer Added Successfully
             </div>
-          </Section>
-          <Section>
-            {"Contact Person: "}
-            <input
-              placeholder="Character name"
-              onChange={handleContactInput}
-              value={contact}
-            />
-          </Section>
-          <Section>
-            <Button>Save</Button>
-          </Section>
-        </div>
-      </form>
+          )}
+        </form>
+        <Button
+          onClick={() => {
+            setIsActive(false);
+          }}
+        >
+          Done
+        </Button>
+      </div>
     );
   };
   return (
