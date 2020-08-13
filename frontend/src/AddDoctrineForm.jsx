@@ -50,7 +50,7 @@ class UnconnectedAddDoctrineForm extends Component {
     super(props);
     this.state = { fits: [], stage: 0 };
   }
-  inputHandler = event => {
+  inputHandler = (event) => {
     this.setState({ [event.target.name]: event.target.value });
   };
   loadFits = async () => {
@@ -65,26 +65,32 @@ class UnconnectedAddDoctrineForm extends Component {
   componentDidMount = () => {
     this.loadFits();
   };
-  submitHandler = async event => {
+  submitHandler = async (event) => {
+    const { fits } = this.state;
     event.preventDefault();
+    if (fits.length < 1) {
+      alert("Must add at least one fit");
+      return;
+    }
     let data = new FormData();
     console.log(this.state);
     data.append("name", this.state.title);
     data.append("fits", JSON.stringify(this.state.fits));
     const res = await fetch(devURL + "/add-doctrine", {
       method: "POST",
-      body: data
+      body: data,
     });
     let bod = await res.text();
     bod = JSON.parse(bod);
     if (bod.success) {
       alert("Fit added successfully");
+      window.location.reload();
       this.props.onClose();
     }
   };
-  toggleFit = buttonFitId => {
+  toggleFit = (buttonFitId) => {
     if (this.state.fits.includes(buttonFitId)) {
-      let newFits = this.state.fits.filter(fitId => {
+      let newFits = this.state.fits.filter((fitId) => {
         return fitId != buttonFitId;
       });
       this.setState({ fits: newFits });
@@ -93,7 +99,7 @@ class UnconnectedAddDoctrineForm extends Component {
       this.setState({ fits: newFits });
     }
   };
-  renderFits = fitData => {
+  renderFits = (fitData) => {
     return (
       <FitSelector
         fitName={fitData.title}
@@ -130,7 +136,7 @@ class UnconnectedAddDoctrineForm extends Component {
   };
 }
 
-const mapState = state => {
+const mapState = (state) => {
   return { fits: state.fitList };
 };
 

@@ -44,11 +44,9 @@ class UnconnectedRouter extends Component {
     console.log(this.props.login);
     return (
       <Switch>
-        <Route exact={true} path="/" component={Portal} />
+        <Route exact={true} path="/" component={Landing} />
         <Route exact={true} path="/login" component={Auth} />
         <Route exact={true} path="/sso-auth" component={AuthSSO}></Route>
-        <Route exact={true} path="/mcav" component={Landing} />
-        <Route exact={true} path="/q003" component={Timerboard} />
         {this.props.login ? (
           <>
             <Route exact={true} path="/fits" component={Fits} />
@@ -67,10 +65,10 @@ class UnconnectedRouter extends Component {
   };
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     user: state.userData,
-    login: state.loginStatus
+    login: state.loginStatus,
   };
 };
 

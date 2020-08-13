@@ -15,6 +15,9 @@ class FitButton extends Component {
     }
     this.setState({ clickHandler: this.toggleExpand });
   };
+  renderFitData = () => {
+    return <div></div>;
+  };
   render = () => {
     const { fitData, className } = this.props;
     const { clickHandler } = this.state;
@@ -22,7 +25,7 @@ class FitButton extends Component {
     let hull = "";
     if (this.state.expand === true) {
       let fitLines = fitData.fit.split("\n");
-      formattedFit = fitLines.map(lineStr => {
+      formattedFit = fitLines.map((lineStr) => {
         if (lineStr.length > 0) {
           return <div>{lineStr}</div>;
         }

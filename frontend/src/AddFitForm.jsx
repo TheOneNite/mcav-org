@@ -15,10 +15,10 @@ class AddFitForm extends Component {
     super(props);
     this.state = {};
   }
-  inputHandler = event => {
+  inputHandler = (event) => {
     this.setState({ [event.target.name]: event.target.value });
   };
-  fitPasteHandler = event => {
+  fitPasteHandler = (event) => {
     let fitStr = event.target.value;
     if (this.state.name === undefined) {
       let fitLines = fitStr.split("\n");
@@ -29,10 +29,10 @@ class AddFitForm extends Component {
     }
     this.setState({ fitStr });
   };
-  dropdownhandler = event => {
+  dropdownhandler = (event) => {
     this.setState({ visibility: event.target.value });
   };
-  submitHandler = async event => {
+  submitHandler = async (event) => {
     event.preventDefault();
     let data = new FormData();
     data.append("name", this.state.name);
@@ -40,12 +40,13 @@ class AddFitForm extends Component {
     const res = await fetch(devURL + "/add-fit", {
       method: "POST",
       body: data,
-      credentials: "include"
+      credentials: "include",
     });
     let bod = await res.text();
     bod = JSON.parse(bod);
     if (bod.success) {
       alert("Fit successfully added");
+      window.location.reload();
       this.setState({});
     }
   };
