@@ -1,8 +1,8 @@
-const devURL = "http://localhost:8080";
+//const devURL = "http://localhost:8080";
 //const devURL = "http://mcav.org";
-//const devURL = "https://compayn.space:8080";
+const devURL = "https://compayn.space:8080";
 
-export const proxyBuilder = build => {
+export const proxyBuilder = (build) => {
   switch (build) {
     case "redirect-beta":
       return "https://compayn.space";
