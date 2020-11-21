@@ -1,319 +1,326 @@
-let express = require("express");
-let app = express();
-const https = require("https");
-let cookieParser = require("cookie-parser");
-app.use(cookieParser({}));
-let request = require("request");
-const fs = require("fs");
-let multer = require("multer");
-const upload = multer();
-const cors = require("cors");
+let express = require('express')
+let app = express()
+const https = require('https')
+let cookieParser = require('cookie-parser')
+app.use(cookieParser({}))
+let request = require('request')
+const fs = require('fs')
+let multer = require('multer')
+const upload = multer()
+const cors = require('cors')
 
-const proxyBuilder = require("./proxy.ts");
-const proxy = proxyBuilder("beta");
+const PROD_BUILD = true
+const BUILD_CONFIG = 'prod'
 
-const MongoClient = require("mongodb").MongoClient;
-const dbLogin = require("../../secrets/mcav-fits/databaseURL.js");
-var mongo = undefined;
+const proxyBuilder = require('./proxy.ts')
+const proxy = proxyBuilder(PROD_BUILD ? 'beta' : 'dev')
+
+const MongoClient = require('mongodb').MongoClient
+const dbLogin = require('../../secrets/mcav-fits/databaseURL.js')
+const dbToUse = PROD_BUILD ? 'doctrines' : 'mcav-test'
+
+var mongo = undefined
 MongoClient.connect(dbLogin, (err, dbRef) => {
   if (err) {
-    console.log(err);
-    return;
+    console.log(err)
+    return
   }
-  console.log("DB connected");
-  mongo = dbRef.db("doctrines");
-  console.log("Database connection initialized");
-});
-const dbFetchUser = require("./db_modules/getUserData.js");
+  console.log('DB connected')
+  mongo = dbRef.db(dbToUse)
+  console.log('Database connection initialized')
+})
+const dbFetchUser = require('./db_modules/getUserData.js')
 
-const ssoLogin = require("../../secrets/mcav-fits/sso-login.js");
+const ssoLoginGenerator = require('../../secrets/mcav-fits/sso-login.js')
+const ssoLogin = ssoLoginGenerator(BUILD_CONFIG)
 
-app.use(cors({ origin: true, credentials: true }));
-app.use("/", express.static("build")); // Needed for the HTML and JS files
-app.use("/", express.static("public")); // Needed for local assets
-const generateId = length => {
-  const base = "abcdefghijklmnopqrstuvqxyz";
-  let id = "";
+app.use(cors({ origin: true, credentials: true }))
+app.use('/', express.static('build')) // Needed for the HTML and JS files
+app.use('/', express.static('public')) // Needed for local assets
+const generateId = (length) => {
+  const base = 'abcdefghijklmnopqrstuvqxyz'
+  let id = ''
   for (let i = 0; i <= length; i++) {
-    let index = Math.floor(Math.random() * 26);
-    id = id + base[index];
+    let index = Math.floor(Math.random() * 26)
+    id = id + base[index]
   }
-  return id;
-};
+  return id
+}
 
-const getUIDbySID = sid => {
+const getUIDbySID = (sid) => {
   let userLookup = new Promise((resolve, reject) => {
-    mongo.collection("sessions").findOne({ sid }, (err, result) => {
-      console.log(result);
+    mongo.collection('sessions').findOne({ sid }, (err, result) => {
+      console.log(result)
       if (err) {
-        console.log(err);
-        reject("db error");
-        return;
+        console.log(err)
+        reject('db error')
+        return
       }
       if (result === null) {
-        console.log("no user found");
-        resolve(undefined);
-        return;
+        console.log('no user found')
+        resolve(undefined)
+        return
       }
-      resolve(result.uid);
-    });
-  });
-  return userLookup;
-};
+      resolve(result.uid)
+    })
+  })
+  return userLookup
+}
 
 // Your endpoints go after this line
 
-app.get("/auth", async (req, res) => {
-  console.log("GET/auth");
-  //console.log(req.cookies.sid);
-  let uid = await getUIDbySID(req.cookies.sid);
-  //console.log(uid);
-  if (uid === undefined) {
-    res.send(JSON.stringify({ success: false }));
+app.get('/auth', async (req, res) => {
+  console.log('GET/auth')
+  console.log(req.cookies.sid)
+  let uid = await getUIDbySID(req.cookies.sid)
+  console.log(uid)
+  if (!uid) {
+    res.send(JSON.stringify({ success: false }))
   } else {
-    userData = await dbFetchUser(uid, mongo);
-    console.log("db return");
-    console.log(userData);
-    res.send(JSON.stringify({ success: true, payload: userData }));
+    userData = await dbFetchUser(uid, mongo)
+    console.log('db return')
+    console.log(userData)
+    res.send(JSON.stringify({ success: true, payload: userData }))
   }
-});
-app.get("/sso-auth", (req, res) => {
-  console.log(req.query.code);
-  console.log(req.query.state);
+})
+
+app.get('/sso-auth', (req, res) => {
+  console.log(req.query.code)
+  console.log(req.query.state)
   let tokenBod = {
-    grant_type: "authorization_code",
-    code: req.query.code
-  };
-  let ssoAuthStr = ssoLogin.clientId + ":" + ssoLogin.key;
-  let buff = new Buffer(ssoAuthStr);
-  let ssoAuthStr64 = buff.toString("base64");
-  ssoAuthStr64 = "Basic " + ssoAuthStr64;
+    grant_type: 'authorization_code',
+    code: req.query.code,
+  }
+  let ssoAuthStr = ssoLogin.clientId + ':' + ssoLogin.key
+  let buff = new Buffer(ssoAuthStr)
+  let ssoAuthStr64 = buff.toString('base64')
+  ssoAuthStr64 = 'Basic ' + ssoAuthStr64
   request.post(
-    "https://login.eveonline.com/oauth/token",
+    'https://login.eveonline.com/oauth/token',
     {
       headers: { Authorization: ssoAuthStr64 },
       body: tokenBod,
-      json: true
+      json: true,
     },
     (err, resp, bod) => {
       //console.log("auth-response");
       if (err) {
-        console.log(err);
-        return;
+        console.log(err)
+        return
       }
       if (bod === undefined) {
-        res.json({ success: false });
-        return;
+        res.json({ success: false })
+        return
       }
-      console.log(bod);
+      console.log(bod)
       request.get(
-        "https://esi.evetech.net/verify/?datasource=tranquility",
+        'https://esi.evetech.net/verify/?datasource=tranquility',
         {
-          headers: { Authorization: "Bearer " + bod.access_token }
+          headers: { Authorization: 'Bearer ' + bod.access_token },
         },
         (err, vRes, vBod) => {
-          console.log("verification back");
-          console.log(vRes.statusCode);
+          console.log('verification back')
+          console.log(vRes.statusCode)
           if (err) {
-            console.log(err);
+            console.log(err)
           }
           if (bod === undefined) {
-            console.log("verification failed");
-            console.trace(vRes.toJSON());
-            res.json({ success: false });
-            return;
+            console.log('verification failed')
+            console.trace(vRes.toJSON())
+            res.json({ success: false })
+            return
           }
           //console.log(vBod);
-          vBod = JSON.parse(vBod);
-          console.log(vBod);
+          vBod = JSON.parse(vBod)
+          console.log(vBod)
           let userToken = {
             access: bod.access_token,
-            refresh: bod.refresh_token
-          };
+            refresh: bod.refresh_token,
+          }
           mongo
-            .collection("users")
+            .collection('users')
             .findOne({ charId: vBod.CharacterID }, (err, dbRes) => {
               if (err) {
-                console.log(err);
+                console.log(err)
               }
               if (dbRes === null) {
-                userToken.charId = vBod.CharacterID;
-                var uid = generateId(8);
+                userToken.charId = vBod.CharacterID
+                var uid = generateId(8)
                 mongo
-                  .collection("users")
+                  .collection('users')
                   .insertOne(
                     { uid, charId: vBod.CharacterID, altIDs: [] },
-                    err => {
+                    (err) => {
                       if (err) {
-                        console.log(err);
+                        console.log(err)
                       }
                     }
-                  );
-                userToken.uid = uid;
+                  )
+                userToken.uid = uid
               } else {
-                var uid = dbRes.uid;
+                var uid = dbRes.uid
               }
-              mongo.collection("tokens").insertOne(userToken, err => {
-                console.log(err);
-              });
-              let newSid = generateId(16);
+              mongo.collection('tokens').insertOne(userToken, (err) => {
+                console.log(err)
+              })
+              let newSid = generateId(16)
               mongo
-                .collection("sessions")
-                .insertOne({ uid, sid: newSid }, err => {
+                .collection('sessions')
+                .insertOne({ uid, sid: newSid }, (err) => {
                   if (err) {
-                    console.log(err);
-                    throw err;
+                    console.log(err)
+                    throw err
                   }
-                  console.log("session added: " + newSid);
-                });
-              console.log(proxy);
-              res.cookie("sid", newSid, { domain: proxy });
-              console.log(newSid);
-              res.json({ success: true, charId: vBod.CharacterID });
-            });
+                  console.log('session added: ' + newSid)
+                })
+              console.log(proxy)
+              res.cookie('sid', newSid, { domain: proxy })
+              console.log(newSid)
+              res.json({ success: true, charId: vBod.CharacterID })
+            })
         }
-      );
+      )
       //mongo.collection("tokens").insertOne({})
     }
-  );
-});
+  )
+})
 
-app.post("/add-fit", upload.none(), (req, res) => {
-  console.log("POST/add-fit");
+app.post('/add-fit', upload.none(), (req, res) => {
+  console.log('POST/add-fit')
   let newFit = {
     id: generateId(10),
     title: req.body.name,
-    fit: req.body.fitStr
-  };
-  mongo.collection("fits").insertOne(newFit, (err, result) => {
+    fit: req.body.fitStr,
+  }
+  mongo.collection('fits').insertOne(newFit, (err, result) => {
     if (err) {
-      console.log(err);
-      res.send(JSON.stringify({ success: false }));
-      return;
+      console.log(err)
+      res.send(JSON.stringify({ success: false }))
+      return
     }
-    console.log("fit written to db");
-    res.send(JSON.stringify({ success: true }));
-  });
-});
-app.get("/fits", (req, res) => {
+    console.log('fit written to db')
+    res.send(JSON.stringify({ success: true }))
+  })
+})
+app.get('/fits', (req, res) => {
   mongo
-    .collection("fits")
+    .collection('fits')
     .find()
     .toArray((err, result) => {
       if (err) {
-        console.log(err);
+        console.log(err)
       }
-      res.send(JSON.stringify({ success: true, fitList: result }));
-    });
-});
-app.get("/fit-single", (req, res) => {
-  console.log("GET/fit-single:" + req.query.id);
-  let query = { id: req.query.id };
+      res.send(JSON.stringify({ success: true, fitList: result }))
+    })
+})
+app.get('/fit-single', (req, res) => {
+  console.log('GET/fit-single:' + req.query.id)
+  let query = { id: req.query.id }
   mongo
-    .collection("fits")
+    .collection('fits')
     .find(query)
     .toArray((err, result) => {
       if (err) {
-        console.log(err);
-        return;
+        console.log(err)
+        return
       }
-      res.send(JSON.stringify({ success: true, fit: result[0] }));
-    });
-});
-app.post("/add-doctrine", upload.none(), (req, res) => {
-  console.log("POST/add-doctrine");
-  console.log(req.body);
+      res.send(JSON.stringify({ success: true, fit: result[0] }))
+    })
+})
+app.post('/add-doctrine', upload.none(), (req, res) => {
+  console.log('POST/add-doctrine')
+  console.log(req.body)
   let newDoc = {
     id: generateId(8),
     fits: JSON.parse(req.body.fits),
-    name: req.body.name
-  };
-  mongo.collection("doctrines").insertOne(newDoc, (err, result) => {
+    name: req.body.name,
+  }
+  mongo.collection('doctrines').insertOne(newDoc, (err, result) => {
     if (err) {
-      console.log(err);
-      return;
+      console.log(err)
+      return
     }
-    res.send(JSON.stringify({ success: true }));
-  });
-});
-app.post("/doctrine-update", upload.none(), (req, res) => {
-  console.log("POST /doctrine-update");
-  const docData = JSON.parse(req.body.payload);
-  console.log("incoming", docData);
-  const docId = docData.id;
+    res.send(JSON.stringify({ success: true }))
+  })
+})
+app.post('/doctrine-update', upload.none(), (req, res) => {
+  console.log('POST /doctrine-update')
+  const docData = JSON.parse(req.body.payload)
+  console.log('incoming', docData)
+  const docId = docData.id
   mongo
-    .collection("doctrines")
+    .collection('doctrines')
     .updateOne({ id: docId }, { $set: docData }, (err, dbDoc) => {
       if (err) {
-        console.log(err);
-        res.status(500);
-        res.send(JSON.stringify({ success: false, msg: "db error" }));
-        return;
+        console.log(err)
+        res.status(500)
+        res.send(JSON.stringify({ success: false, msg: 'db error' }))
+        return
       }
-      console.log("updated doctrine " + docData.name);
-      res.send(JSON.stringify({ success: true }));
-    });
-});
-app.get("/doctrines", (req, res) => {
-  console.log("GET/doctrines");
-  console.log("docId " + req.query.id);
-  let docId = req.query.id;
-  let query = {};
+      console.log('updated doctrine ' + docData.name)
+      res.send(JSON.stringify({ success: true }))
+    })
+})
+app.get('/doctrines', (req, res) => {
+  console.log('GET/doctrines')
+  console.log('docId ' + req.query.id)
+  let docId = req.query.id
+  let query = {}
   if (docId) {
-    query.id = docId;
+    query.id = docId
   }
   mongo
-    .collection("doctrines")
+    .collection('doctrines')
     .find(query)
     .toArray((err, result) => {
       if (err) {
-        console.log(err);
+        console.log(err)
       }
-      res.send(JSON.stringify({ success: true, docList: result }));
-    });
-});
+      res.send(JSON.stringify({ success: true, docList: result }))
+    })
+})
 
 // TIMERBOARD ENDPOINTS -----------------------------------------------------------------------------
 
-app.post("/add-timer", upload.none(), (req, res) => {
-  console.log("POST/add-timer");
-  const uid = getUIDbySID(req.cookies.sid);
-  console.log(uid);
-  const payload = JSON.parse(req.body.payload);
-  const verifyInput = input => {
+app.post('/add-timer', upload.none(), (req, res) => {
+  console.log('POST/add-timer')
+  const uid = getUIDbySID(req.cookies.sid)
+  console.log(uid)
+  const payload = JSON.parse(req.body.payload)
+  const verifyInput = (input) => {
     const structures = [
-      "astrahus",
-      "fortizar",
-      "raitaru",
-      "azbel",
-      "athanor",
-      "tatara"
-    ];
-    console.log(input);
+      'astrahus',
+      'fortizar',
+      'raitaru',
+      'azbel',
+      'athanor',
+      'tatara',
+    ]
+    console.log(input)
     if (input.contact === undefined) {
       return {
         success: false,
-        msg: "you must include a timer point of contact"
-      };
+        msg: 'you must include a timer point of contact',
+      }
     }
     if (input.stage === undefined) {
       return {
         success: false,
-        msg: "you must include a timer type"
-      };
+        msg: 'you must include a timer type',
+      }
     }
     if (!structures.includes(input.structure)) {
       return {
         success: false,
-        msg: "you must include a structure type"
-      };
+        msg: 'you must include a structure type',
+      }
     }
     if (input.exits === undefined) {
-      return { success: false, msg: "you must include a timer duration" };
+      return { success: false, msg: 'you must include a timer duration' }
     }
-    return true;
-  };
-  console.log(verifyInput(payload));
+    return true
+  }
+  console.log(verifyInput(payload))
   if (verifyInput(payload) === true) {
     const record = {
       id: generateId(10),
@@ -321,59 +328,59 @@ app.post("/add-timer", upload.none(), (req, res) => {
       stage: payload.stage,
       contact: payload.contact,
       timer: payload.exits,
-      expired: false
-    };
+      expired: false,
+    }
     mongo
-      .collection("q003-timers")
+      .collection('q003-timers')
       .insertOne({ data: record }, (err, result) => {
         if (err) {
-          console.log(err);
-          res.send(JSON.stringify({ success: false, msg: err }));
+          console.log(err)
+          res.send(JSON.stringify({ success: false, msg: err }))
         }
-        res.send(JSON.stringify({ success: true }));
-      });
-    return;
+        res.send(JSON.stringify({ success: true }))
+      })
+    return
   }
-  res.send(JSON.stringify(verifyInput(payload)));
-});
-app.get("/all-timers", (req, res) => {
-  console.log("GET:/all-timers");
-  const uid = getUIDbySID(req.cookies.sid);
+  res.send(JSON.stringify(verifyInput(payload)))
+})
+app.get('/all-timers', (req, res) => {
+  console.log('GET:/all-timers')
+  const uid = getUIDbySID(req.cookies.sid)
   mongo
-    .collection("q003-timers")
+    .collection('q003-timers')
     .find({})
     .toArray((err, allTimers) => {
       if (allTimers === null) {
-        res.send(JSON.stringify({ success: false, msg: "null result" }));
-        return;
+        res.send(JSON.stringify({ success: false, msg: 'null result' }))
+        return
       }
-      const timersList = allTimers.map(dbTimer => dbTimer.data);
-      res.send(JSON.stringify({ success: true, timersList: timersList }));
-    });
-});
-app.get("/timer-details", (req, res) => {
-  console.log("GET/timer-details", req.query.id);
-  const uid = getUIDbySID(req.cookies.sid);
+      const timersList = allTimers.map((dbTimer) => dbTimer.data)
+      res.send(JSON.stringify({ success: true, timersList: timersList }))
+    })
+})
+app.get('/timer-details', (req, res) => {
+  console.log('GET/timer-details', req.query.id)
+  const uid = getUIDbySID(req.cookies.sid)
   mongo
-    .collection("q003-timers")
+    .collection('q003-timers')
     .findOne({ id: req.query.id }, (err, result) => {
       if (err) {
-        console.log(err);
-        res.send(JSON.stringify({ success: false, msg: err }));
-        return;
+        console.log(err)
+        res.send(JSON.stringify({ success: false, msg: err }))
+        return
       }
-      res.send({ success: true, timerData: result.data });
-    });
-});
+      res.send({ success: true, timerData: result.data })
+    })
+})
 
 // Your endpoints go before this line
 
-app.all("/*", (req, res, next) => {
-  console.log("mcavFits");
-  console.log(req.path);
+app.all('/*', (req, res, next) => {
+  console.log('mcavFits')
+  console.log(req.path)
   // needed for react router
-  res.sendFile(__dirname + "/build/index.html");
-});
+  res.sendFile(__dirname + '/build/index.html')
+})
 
 /*
 https
@@ -388,6 +395,6 @@ https
   .listen(8080);
   */
 
-app.listen(8080, "0.0.0.0", () => {
-  console.log("Server running on port 8080");
-});
+app.listen(8080, '0.0.0.0', () => {
+  console.log('Server running on port 8080')
+})

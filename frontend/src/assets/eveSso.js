@@ -1,7 +1,12 @@
-import { proxyBuilder } from "./proxy.js";
+import { proxyBuilder, isProd, getAppId, getScopes } from './proxy.js'
+import appsettings from '../appsettings'
 
-const redirect = proxyBuilder("redirect-beta");
+const clientId = getAppId(appsettings.buildConfig)
 
-const uri = `https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri=${redirect}/sso-auth&scope=publicData&client_id=c23147201ca9455a841bd6f06df98842`;
+const redirect = proxyBuilder('redirect-dev')
 
-export { uri };
+const scopes = getScopes(appsettings.buildConfig)
+
+const uri = `https://login.eveonline.com/oauth/authorize?response_type=code&redirect_uri=${redirect}/sso-auth&scope=${scopes}&client_id=${clientId}`
+
+export { uri }
