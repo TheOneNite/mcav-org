@@ -408,17 +408,17 @@ app.all('/*', (req, res, next) => {
   res.sendFile(__dirname + '/build/index.html')
 })
 
-// https
-//   .createServer(
-//     {
-//       key: fs.readFileSync('./compayn.space.key.txt'),
-//       cert: fs.readFileSync('./compayn.space.crt'),
-//       passphrase: 'enyos',
-//     },
-//     app
-//   )
-//   .listen(8080)
+https
+  .createServer(
+    {
+      key: fs.readFileSync('./compayn.space.key.txt'),
+      cert: fs.readFileSync('./compayn.space.crt'),
+      passphrase: 'enyos',
+    },
+    app
+  )
+  .listen(8080)
 
-app.listen(8080, '0.0.0.0', () => {
-  console.log('Server running on port 8080')
-})
+// app.listen(8080, '0.0.0.0', () => {
+//   console.log('Server running on port 8080')
+// })
