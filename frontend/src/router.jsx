@@ -14,7 +14,7 @@ import Timerboard from './routes/q003/timerboard/Timerboard.jsx'
 import RuleList from './routes/rules/RuleList'
 
 // "server-beta"
-const uri = proxyBuilder()
+const uri = proxyBuilder('server-beta')
 
 class UnconnectedRouter extends Component {
   constructor(props) {
