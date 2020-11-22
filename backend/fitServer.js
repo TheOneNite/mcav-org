@@ -11,9 +11,13 @@ const cors = require('cors')
 
 const PROD_BUILD = true
 const BUILD_CONFIG = 'prod'
+const ESI_URI = 'https://esi.evetech.net/verify/?datasource=tranquility'
 
 const proxyBuilder = require('./proxy.ts')
 const proxy = proxyBuilder(PROD_BUILD ? 'beta' : 'dev')
+
+// db custom modules import
+const migratePermissions = require('./db_modules/migratePermissions')
 
 const MongoClient = require('mongodb').MongoClient
 const dbLogin = require('../../secrets/mcav-fits/databaseURL.js')
@@ -71,22 +75,26 @@ const getUIDbySID = (sid) => {
 
 app.get('/auth', async (req, res) => {
   console.log('GET/auth')
-  console.log(req.cookies.sid)
   let uid = await getUIDbySID(req.cookies.sid)
-  console.log(uid)
   if (!uid) {
     res.send(JSON.stringify({ success: false }))
   } else {
     userData = await dbFetchUser(uid, mongo)
-    console.log('db return')
-    console.log(userData)
+    if (!userData.permissions) {
+      console.log(`updating permissions for user ${userData.uid}`)
+      let newPermissions = migratePermissions(userData)
+      mongo
+        .collection('users')
+        .updateOne(
+          { charId: vBod.CharacterID },
+          { $set: { permissions: newPermissions } }
+        )
+    }
     res.send(JSON.stringify({ success: true, payload: userData }))
   }
 })
 
 app.get('/sso-auth', (req, res) => {
-  console.log(req.query.code)
-  console.log(req.query.state)
   let tokenBod = {
     grant_type: 'authorization_code',
     code: req.query.code,
@@ -112,15 +120,12 @@ app.get('/sso-auth', (req, res) => {
         res.json({ success: false })
         return
       }
-      console.log(bod)
       request.get(
         'https://esi.evetech.net/verify/?datasource=tranquility',
         {
           headers: { Authorization: 'Bearer ' + bod.access_token },
         },
         (err, vRes, vBod) => {
-          console.log('verification back')
-          console.log(vRes.statusCode)
           if (err) {
             console.log(err)
           }
@@ -130,8 +135,8 @@ app.get('/sso-auth', (req, res) => {
             res.json({ success: false })
             return
           }
-          //console.log(vBod);
           vBod = JSON.parse(vBod)
+          console.log('verification back')
           console.log(vBod)
           let userToken = {
             access: bod.access_token,
@@ -139,30 +144,52 @@ app.get('/sso-auth', (req, res) => {
           }
           mongo
             .collection('users')
-            .findOne({ charId: vBod.CharacterID }, (err, dbRes) => {
+            .findOne({ charId: vBod.CharacterID }, async (err, dbRes) => {
               if (err) {
                 console.log(err)
               }
               if (dbRes === null) {
                 userToken.charId = vBod.CharacterID
                 var uid = generateId(8)
+                let permissions = await migratePermissions({
+                  token: userToken,
+                  charId: vBod.CharacterID,
+                })
+                mongo.collection('users').insertOne(
+                  {
+                    uid,
+                    charId: vBod.CharacterID,
+                    permissions,
+                    tokens: userToken,
+                    altIDs: [],
+                  },
+                  (err) => {
+                    if (err) {
+                      console.log(err)
+                    }
+                  }
+                )
+                userToken.uid = uid
+              }
+              if (dbRes) {
                 mongo
                   .collection('users')
-                  .insertOne(
-                    { uid, charId: vBod.CharacterID, altIDs: [] },
-                    (err) => {
-                      if (err) {
-                        console.log(err)
-                      }
-                    }
+                  .updateOne(
+                    { charId: vBod.CharacterID },
+                    { $set: { token: userToken } }
                   )
-                userToken.uid = uid
-              } else {
                 var uid = dbRes.uid
+                // if (!dbRes.permissions) {
+                let newPermissions = await migratePermissions(dbRes)
+                console.log('permissions back', newPermissions)
+                mongo
+                  .collection('users')
+                  .updateOne(
+                    { charId: vBod.CharacterID },
+                    { $set: { permissions: newPermissions } }
+                  )
+                // }
               }
-              mongo.collection('tokens').insertOne(userToken, (err) => {
-                console.log(err)
-              })
               let newSid = generateId(16)
               mongo
                 .collection('sessions')
@@ -173,7 +200,6 @@ app.get('/sso-auth', (req, res) => {
                   }
                   console.log('session added: ' + newSid)
                 })
-              console.log(proxy)
               res.cookie('sid', newSid, { domain: proxy })
               console.log(newSid)
               res.json({ success: true, charId: vBod.CharacterID })
