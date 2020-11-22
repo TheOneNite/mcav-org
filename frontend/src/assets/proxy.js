@@ -30,7 +30,7 @@ export const getScopes = (buildConfig) => {
   if (buildConfig === 'dev')
     return 'esi-fittings.read_fittings.v1 esi-fittings.write_fittings.v1 esi-characters.read_corporation_roles.v1'
   if (buildConfig === 'prod') {
-    return 'publicData esi-skills.read_skills.v1 esi-clones.read_clones.v1 esi-fittings.write_fittings.v1 esi-clones.read_implants.v1'
+    return 'publicData esi-skills.read_skills.v1 esi-clones.read_clones.v1 esi-fittings.write_fittings.v1 esi-characters.read_corporation_roles.v1 esi-clones.read_implants.v1'
   }
 }
 
