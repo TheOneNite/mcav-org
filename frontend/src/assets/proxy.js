@@ -1,8 +1,8 @@
-// const devURL = 'http://localhost:8080'
+const devURL = 'http://localhost:8080'
 //const devURL = "http://mcav.org";
-const devURL = 'https://compayn.space:8080'
+const prodURL = 'https://compayn.space:8080'
 
-const buildConfig = 'dev'
+const buildConfig = 'prod'
 
 export const proxyBuilder = (build) => {
   switch (build) {
@@ -33,4 +33,6 @@ export const getScopes = (buildConfig) => {
     return 'publicData esi-skills.read_skills.v1 esi-clones.read_clones.v1 esi-fittings.write_fittings.v1 esi-clones.read_implants.v1'
   }
 }
-export default devURL
+
+const uri = buildConfig === 'prod' ? prodURL : devURL
+export default uri

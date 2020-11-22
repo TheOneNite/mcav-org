@@ -3,7 +3,9 @@ import appsettings from '../appsettings'
 
 const clientId = getAppId(appsettings.buildConfig)
 
-const redirect = proxyBuilder('redirect-beta')
+const redirect = proxyBuilder(
+  appsettings.buildConfig === 'prod' ? 'redirect-beta' : 'redirect-dev'
+)
 
 const scopes = getScopes(appsettings.buildConfig)
 
