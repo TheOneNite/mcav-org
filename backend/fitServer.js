@@ -149,7 +149,6 @@ app.get('/sso-auth', (req, res) => {
                 console.log(err)
               }
               if (dbRes === null) {
-                userToken.charId = vBod.CharacterID
                 var uid = generateId(8)
                 let permissions = await migratePermissions({
                   token: userToken,
@@ -179,16 +178,16 @@ app.get('/sso-auth', (req, res) => {
                     { $set: { token: userToken } }
                   )
                 var uid = dbRes.uid
-                // if (!dbRes.permissions) {
-                let newPermissions = await migratePermissions(dbRes)
-                console.log('permissions back', newPermissions)
-                mongo
-                  .collection('users')
-                  .updateOne(
-                    { charId: vBod.CharacterID },
-                    { $set: { permissions: newPermissions } }
-                  )
-                // }
+                if (!dbRes.permissions) {
+                  let newPermissions = await migratePermissions(dbRes)
+                  console.log('permissions back', newPermissions)
+                  mongo
+                    .collection('users')
+                    .updateOne(
+                      { charId: vBod.CharacterID },
+                      { $set: { permissions: newPermissions } }
+                    )
+                }
               }
               let newSid = generateId(16)
               mongo
