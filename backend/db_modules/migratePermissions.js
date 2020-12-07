@@ -41,6 +41,9 @@ const migratePermissions = (dbRes) => {
   //   if (dbRes.permissions) return
   if (!dbRes.token) {
     console.log('tokens not valid')
+  }
+  if (!dbRes.charId) {
+    console.log('no user')
   } else {
     return getPermissions(dbRes.charId, dbRes.token.access)
   }
