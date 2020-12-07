@@ -21,6 +21,8 @@ class UnconnectedAuthSSO extends Component {
       let cBod = await cRes.text()
       cBod = JSON.parse(cBod)
       this.setState({ charPub: cBod })
+    } else {
+      this.setState({ error: res.error })
     }
   }
   componentDidMount = () => {
@@ -37,6 +39,16 @@ class UnconnectedAuthSSO extends Component {
     }
   }
   render = () => {
+    if (this.state.error) {
+      return (
+        <div>
+          <div>
+            There has been an error, please poke Comp with the following info:
+          </div>
+          <div>{this.state.error}</div>
+        </div>
+      )
+    }
     if (this.state.charPub === undefined) {
       return <div>Loading....</div>
     }
